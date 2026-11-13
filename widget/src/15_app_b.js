@@ -14,7 +14,7 @@
                             fontSize: 12, fontWeight: "bold", textAlign: "center",
                             lineHeight: "22px",
                             border: "2px solid " + (on ? INK : "transparent"),
-                            boxShadow: on ? "2px 2px 0 rgba(31,58,92,0.35)" : "none",
+                            boxShadow: on ? "2px 2px 0 " + SHADOW : "none",
                             cursor: "pointer", padding: 0 } },
                         LETTERS[i]);
                     })),
@@ -61,7 +61,7 @@
       style: {
         display: "inline-block", width: 12, height: 12, borderRadius: "50%",
         background: solid ? PARTY_COLORS[i] : mixHex(PARTY_COLORS[i], PAPER, t),
-        boxShadow: solid ? "1px 1px 0 rgba(31,58,92,0.3)" : "none",
+        boxShadow: solid ? "1px 1px 0 " + SHADOW : "none",
       } });
   }
 
@@ -111,7 +111,7 @@
         h("span", { class: "mr-1.5 inline-block align-middle",
             style: { width: 9, height: 9, borderRadius: "50%",
               background: PARTY_COLORS[i],
-              boxShadow: "1px 1px 0 rgba(31,58,92,0.3)" } }),
+              boxShadow: "1px 1px 0 " + SHADOW } }),
         r.name),
       h("div", { class: "flex flex-wrap items-center vof-flokdots",
           style: { gap: 3 } },
@@ -151,7 +151,7 @@
           fontFamily: 'Georgia, "Times New Roman", serif', color: INK } },
       h("div", { class: "relative mx-auto max-w-6xl",
           style: { border: "3px double " + INK, padding: "1.5rem",
-            boxShadow: "4px 4px 0 rgba(31,58,92,0.25)" } },
+            boxShadow: "4px 4px 0 " + SHADOW } },
         h("div", null, Rule()),
         h("p", { class: "mt-6 text-sm italic", style: { color: FAINT } },
           "Reikna spá …"))));
@@ -164,7 +164,7 @@
           fontFamily: 'Georgia, "Times New Roman", serif', color: INK } },
       h("div", { class: "relative mx-auto max-w-6xl",
           style: { border: "3px double " + INK, padding: "1.5rem",
-            boxShadow: "4px 4px 0 rgba(31,58,92,0.25)" } },
+            boxShadow: "4px 4px 0 " + SHADOW } },
         h("div", null, Rule()),
         h("p", { class: "mt-6 text-sm" },
           "Ekki tókst að sækja spágögn. ",
@@ -189,6 +189,9 @@
       }, 0);
     })
     .catch(function (e) { renderError(e && e.message); });
+
+  /* endurteikna þegar gestgjafinn skiptir um ljósa/dökku stellingu */
+  watchTheme(el, function () { if (st.data) render(); });
 }
 
 /* Compact mode — lítill spjaldi fyrir forsíðu: titill, regla,
@@ -198,8 +201,11 @@ function mountCompact(el, opts) {
   var dataUrl = (opts && opts.dataUrl) || DEFAULT_DATA_URL;
   var href = (opts && opts.href) || DEFAULT_HREF;
 
+  var lastFj = null;
   function render(data) {
+    applySiteTheme();
     var fj = data;
+    lastFj = fj;
     /* sömu akvarðanörðu hlutöll og Heildarspá á spásíðunni */
     var nat = nationalImplied(fj);
     var order = LETTER_ORDER.map(function (_, i) { return i; })
@@ -240,6 +246,9 @@ function mountCompact(el, opts) {
       el.appendChild(h("div", { class: "vof vofc-err" },
         "Ekki tókst að sækja spágögn."));
     });
+
+  /* endurteikna spjaldið þegar stellingin skiptist */
+  watchTheme(el, function () { if (lastFj) render(lastFj); });
 }
 
 /* ---------- breið útgáfa (data-vofan-spa-wide) ---------- */
@@ -312,6 +321,7 @@ var api = {
   allocateSeats: allocateSeats,
   mapForecast: mapForecast,
   nationalImplied: nationalImplied,
+  applySiteTheme: applySiteTheme,
 };
 if (typeof window !== "undefined") window.VofanSpa = api;
 if (typeof module !== "undefined" && module.exports) module.exports = api;
