@@ -496,7 +496,11 @@ var CSS = `
 }
 
 /* ---- þéttur gæludyr (vofn innskot á forsíðu) ---- */
-.vofc-card { display: block; text-decoration: none; color: inherit;
+/* spjaldið er pappírsgeypti: eigin blekslitur (#1F3A5C), ekki
+   erfður frá gestgjafarsíðunni — í dökku þema síðunnar erfðist
+   ljós textalitur sem myndi hverfa á pappír spjaldsins */
+.vofc-card { display: block; text-decoration: none;
+  color: #1F3A5C; margin: 40px 0 0;
   border: 3px double #1F3A5C; background: #F2ECDD;
   padding: 12px 14px; box-shadow: 4px 4px 0 rgba(31,58,92,0.25);
   transition: transform 0.1s ease, box-shadow 0.1s ease; }
@@ -508,6 +512,11 @@ var CSS = `
 .vofc-rule { margin-top: 6px; }
 .vofc-strip { display: flex; flex-wrap: nowrap; gap: 4px 14px;
   margin-top: 10px; font-size: 13px; }
+/* þróng útgáfa (farsími): strikan fær að falla í nokkra rauna
+   í stað þess að flæða út spjaldinu — spjaldið sjálft er ílátið */
+@container vof (max-width: 640px) {
+  .vofc-strip { flex-wrap: wrap; row-gap: 6px; }
+}
 .vofc-item { white-space: nowrap; display: inline-flex;
   align-items: center; gap: 5px; }
 .vofc-dot { width: 9px; height: 9px; border-radius: 50%;
