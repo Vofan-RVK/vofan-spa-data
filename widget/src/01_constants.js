@@ -15,10 +15,13 @@ var THEME_DARK = {
   paper: "#141D2B", ink: "#F2ECDD", rust: "#E0653F", faint: "#8FA3BC",
   shadow: "rgba(0,0,0,0.45)", tint: "rgba(242,236,221,0.05)",
   parties: [
-    /* D (Viðreisn) ljósker í gegn og M (Miðflokkur) hélt dökkblátt —
-       í fyrri útgáfu lágu þeir of nær hver öðrum á myrka pappírnum */
-    "#8FBF6B", "#E8912D", "#7CB4E6", "#E3C054", "#D95748",
-    "#365A85", "#9B6BB4", "#E07060", "#57A06B", "#9AA5B1",
+    /* D (Viðreisn) mjög ljós og rísblátt (#A6D8F2) en M (Miðflokkur)
+      djúp dökkblágrár (#2E4A68) — Gísli fann þá enn of nána hvor öðrum
+      í myrku hamnum (v3.8 ljóskeraningin dugði ekki); nú er bæði
+      ljósmerkismunur og litblærarmunur á milli þeirra, og munurinn
+      heldur sér jafnvel í túntu kjördæmakortanna */
+    "#8FBF6B", "#E8912D", "#A6D8F2", "#E3C054", "#D95748",
+    "#2E4A68", "#9B6BB4", "#E07060", "#57A06B", "#9AA5B1",
   ],
 };
 var PAPER = THEME_LIGHT.paper;
