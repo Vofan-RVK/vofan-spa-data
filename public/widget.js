@@ -10,21 +10,67 @@
    ============================================================ */
 (function () {
 "use strict";
-const PAPER = "#F2ECDD";
-const INK = "#1F3A5C";
-const RUST = "#D2542F";
-const FAINT = "#8FA3BC";
+/* litastefna: widgetið fylgir ljósu/dökku stellingu vofan.org.
+   Risógraf-palléttin í tveimur útgáfum — ljósa er hin samþykktu,
+   dökka er „næturútgáfa“ sömu prentlistar: dökkur marinblár
+   pappír, rjóma blekur, sami ryðglóinn, ljóskerri flokkalitir
+   svo myrku flokkarnir (J, M, V) sökkvi ekki í myrkri. */
+var THEME_LIGHT = {
+  paper: "#F2ECDD", ink: "#1F3A5C", rust: "#D2542F", faint: "#8FA3BC",
+  shadow: "rgba(31,58,92,0.3)", tint: "rgba(31,58,92,0.06)",
+  parties: [
+    "#8FBF6B", "#E8912D", "#6FA0C7", "#E3C054", "#8E1F1A",
+    "#274E77", "#7B4B94", "#E07060", "#2E6B3E", "#9AA5B1",
+  ],
+};
+var THEME_DARK = {
+  paper: "#141D2B", ink: "#F2ECDD", rust: "#E0653F", faint: "#8FA3BC",
+  shadow: "rgba(0,0,0,0.45)", tint: "rgba(242,236,221,0.05)",
+  parties: [
+    "#8FBF6B", "#E8912D", "#6FA0C7", "#E3C054", "#D95748",
+    "#5C8CBF", "#9B6BB4", "#E07060", "#57A06B", "#9AA5B1",
+  ],
+};
+var PAPER = THEME_LIGHT.paper;
+var INK = THEME_LIGHT.ink;
+var RUST = THEME_LIGHT.rust;
+var FAINT = THEME_LIGHT.faint;
+var SHADOW = THEME_LIGHT.shadow;
+var TINT = THEME_LIGHT.tint;
+var PARTY_COLORS = THEME_LIGHT.parties.slice();
+var IS_DARK = false;
 
+/* les stellingu gestgjafarsíðunnar (vofan.org skiptir á .dark
+   klasanum á rótareglunni) og uppfærer alla litaviðföng */
+function applySiteTheme() {
+  if (typeof document === "undefined" || !document.documentElement ||
+      !document.documentElement.classList) return IS_DARK;
+  var dark = document.documentElement.classList.contains("dark");
+  if (dark !== IS_DARK) {
+    IS_DARK = dark;
+    var t = dark ? THEME_DARK : THEME_LIGHT;
+    PAPER = t.paper; INK = t.ink; RUST = t.rust; FAINT = t.faint;
+    SHADOW = t.shadow; TINT = t.tint; PARTY_COLORS = t.parties.slice();
+  }
+  return IS_DARK;
+}
+
+/* hlýðir á stellingarskipti gestgjafans: MutationObserver á
+   klasalistanum á rótareglunni kallar fn eftir hvert skip.
+   (vofan.org skiptir á .dark klasanum án endurhleðslu) */
+function watchTheme(el, fn) {
+  if (typeof MutationObserver === "undefined" ||
+      typeof document === "undefined" || !document.documentElement ||
+      !el || el.__vofanThemeWatch) return;
+  el.__vofanThemeWatch = true;
+  var mo = new MutationObserver(function () { fn(); });
+  mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+}
 const NAT_THRESHOLD = 5;
 const SIMS = 3000;
 const EQUAL_SEATS = 9;
 const NO_SEAT = 9;
 const MAP_H = 500;
-
-const PARTY_COLORS = [
-  "#8FBF6B", "#E8912D", "#6FA0C7", "#E3C054", "#8E1F1A",
-  "#274E77", "#7B4B94", "#E07060", "#2E6B3E", "#9AA5B1",
-];
 
 /* litablanda: opakt prentlita blanda flokks og pappírs */
 function mixHex(hex, paperHex, t) {
@@ -403,9 +449,16 @@ function pct(x) {
 
 /* ---------- stíll ---------- */
 var CSS = `
-.vof { font-family: Georgia, "Times New Roman", serif; color: #1F3A5C;
-  background: #F2ECDD; font-size: 16px; line-height: 1.5;
+.vof {
+  --vof-paper: #F2ECDD; --vof-ink: #1F3A5C; --vof-rust: #D2542F;
+  --vof-faint: #8FA3BC; --vof-shadow: rgba(31,58,92,0.3);
+  font-family: Georgia, "Times New Roman", serif; color: var(--vof-ink);
+  background: var(--vof-paper); font-size: 16px; line-height: 1.5;
   container: vof / inline-size; }
+/* næturútgáfan tekur sjálfkrafa við þegar vofan.org er í myrku ham */
+:root.dark .vof {
+  --vof-paper: #141D2B; --vof-ink: #F2ECDD; --vof-rust: #E0653F;
+  --vof-faint: #8FA3BC; --vof-shadow: rgba(0,0,0,0.45); }
 .vof, .vof *, .vof *::before, .vof *::after { box-sizing: border-box; }
 .vof * { margin: 0; padding: 0; border: 0 solid; }
 .vof svg { display: block; vertical-align: middle; }
@@ -502,14 +555,14 @@ var CSS = `
 /* .vof.vofc-card — samsett vísandi vegna .vof a { color: inherit }
    sem annars yrði sérstakara og yfirskyggi litinn */
 .vof.vofc-card { display: block; text-decoration: none;
-  color: #1F3A5C; margin: 40px 0 0;
-  border: 3px double #1F3A5C; background: #F2ECDD;
-  padding: 12px 14px; box-shadow: 4px 4px 0 rgba(31,58,92,0.25);
+  color: var(--vof-ink); margin: 40px 0 0;
+  border: 3px double var(--vof-ink); background: var(--vof-paper);
+  padding: 12px 14px; box-shadow: 4px 4px 0 var(--vof-shadow);
   transition: transform 0.1s ease, box-shadow 0.1s ease; }
 .vofc-card:active, .vofc-card:focus, .vofc-card:hover,
 .vofc-card * { text-decoration: none; }
 .vofc-card:hover { transform: translate(-1px, -1px);
-  box-shadow: 5px 5px 0 rgba(31,58,92,0.3); }
+  box-shadow: 5px 5px 0 var(--vof-shadow); }
 .vofc-title { font-size: 16px; font-weight: 700; }
 .vofc-rule { margin-top: 6px; }
 .vofc-strip { display: flex; flex-wrap: nowrap; gap: 4px 14px;
@@ -522,11 +575,11 @@ var CSS = `
 .vofc-item { white-space: nowrap; display: inline-flex;
   align-items: center; gap: 5px; }
 .vofc-dot { width: 9px; height: 9px; border-radius: 50%;
-  display: inline-block; box-shadow: 1px 1px 0 rgba(31,58,92,0.3); }
+  display: inline-block; box-shadow: 1px 1px 0 var(--vof-shadow); }
 .vofc-foot { display: flex; justify-content: space-between;
   align-items: baseline; margin-top: 10px; font-size: 12px; font-style: italic; }
-.vofc-more { font-style: normal; font-weight: 700; color: #D2542F; }
-.vofc-err { border: 3px double #1F3A5C; background: #F2ECDD;
+.vofc-more { font-style: normal; font-weight: 700; color: var(--vof-rust); }
+.vofc-err { border: 3px double var(--vof-ink); background: var(--vof-paper);
   padding: 12px 14px; font-size: 13px; }
 `;
 var CSS_INJECTED = false;
@@ -648,7 +701,7 @@ function InsetMap(sim, selected, onSelect) {
     hs("svg", { viewBox: "0 0 " + I.W + " " + I.H,
         "preserveAspectRatio": "xMidYMin meet", class: "vof-mapsvg",
         style: { width: "100%", height: MAP_H } },
-      hs("rect", { x: 0, y: 0, width: I.W, height: I.H, fill: "rgba(31,58,92,0.06)" }),
+      hs("rect", { x: 0, y: 0, width: I.W, height: I.H, fill: TINT }),
       I.ctx.map(function (m) {
         return m.d.map(function (d) {
           return hs("path", { d: d, fill: NEI, stroke: NEI, "stroke-width": 3,
@@ -681,10 +734,10 @@ function SeatDots(o) {
       eqs.push({ name: name, i: i, key: name + "-j-" + k2, j: true });
   });
   var ds = o.tiny
-    ? { w: 10, f: 0, shadow: "1px 1px 0 rgba(31,58,92,0.35)", gap: 2 }
+    ? { w: 10, f: 0, shadow: "1px 1px 0 " + SHADOW, gap: 2 }
     : o.bare
-    ? { w: 13, f: 8, shadow: "1px 1px 0 rgba(31,58,92,0.35)", gap: 4 }
-    : { w: 18, f: 10, shadow: "2px 2px 0 rgba(31,58,92,0.35)", gap: 4 };
+    ? { w: 13, f: 8, shadow: "1px 1px 0 " + SHADOW, gap: 4 }
+    : { w: 18, f: 10, shadow: "2px 2px 0 " + SHADOW, gap: 4 };
   function dot(d) {
     return h("span", {
       title: (d.j ? "Jöfnunarsæti: " : "") + d.name,
@@ -785,7 +838,7 @@ function ParlArch(totals, shares, coalition, onToggle, dotHover) {
       }
       attrs.on = ev;
       return hs("g", null,
-        hs("circle", { cx: p.x + 2, cy: p.y + 2, r: dotR, fill: "rgba(31,58,92,0.3)" }),
+        hs("circle", { cx: p.x + 2, cy: p.y + 2, r: dotR, fill: SHADOW }),
         hs("circle", attrs)
       );
     })
@@ -815,7 +868,7 @@ function ConstitTable(c, polls, drawAlloc, drawEq) {
             h("td", { class: "pr-2 font-semibold" },
               h("span", { class: "mr-1.5 inline-block align-middle",
                 style: { width: 9, height: 9, borderRadius: "50%", background: PARTY_COLORS[i],
-                  boxShadow: "1px 1px 0 rgba(31,58,92,0.3)" } }),
+                  boxShadow: "1px 1px 0 " + SHADOW } }),
               p.name),
             h("td", { class: "text-right tabular-nums" }, pct(polls[c.id][i])),
             h("td", { class: "text-right font-bold tabular-nums" },
@@ -848,12 +901,16 @@ function showTip(text, x, y) {
   if (!tipEl) {
     tipEl = document.createElement("div");
     tipEl.setAttribute("style",
-      "position:fixed;background:" + PAPER + ";border:1px solid " + INK +
-      ";box-shadow:3px 3px 0 rgba(31,58,92,0.25);padding:3px 8px;" +
-      "font-size:12px;font-family:Georgia,'Times New Roman',serif;color:" + INK +
+      "position:fixed;border:1px solid;padding:3px 8px;" +
+      "font-size:12px;font-family:Georgia,'Times New Roman',serif" +
       ";white-space:nowrap;pointer-events:none;z-index:50;");
     document.body.appendChild(tipEl);
   }
+  /* litir endurnýjast í hvert skipti — bendillinn er í skyndiminni */
+  tipEl.style.background = PAPER;
+  tipEl.style.borderColor = INK;
+  tipEl.style.color = INK;
+  tipEl.style.boxShadow = "3px 3px 0 " + SHADOW;
   tipEl.style.left = x + "px";
   tipEl.style.top = (y - 12) + "px";
   tipEl.style.transform = "translate(-50%, -100%)";
@@ -921,7 +978,7 @@ function mountFull(el, opts) {
         style: {
           position: "absolute", top: 10, right: 10, maxWidth: 300,
           background: PAPER, border: "1px solid " + INK,
-          boxShadow: "4px 4px 0 rgba(31,58,92,0.25)", padding: 12,
+          boxShadow: "4px 4px 0 " + SHADOW, padding: 12,
         } },
       h("div", { class: "flex items-baseline justify-between" },
         h("span", { class: "text-2xl font-bold", style: { color: RUST } }, sel.abbr),
@@ -937,6 +994,7 @@ function mountFull(el, opts) {
   }
 
   function render() {
+    applySiteTheme();
     var sim = st.sim;
     var sel = st.selected
       ? sim.constituencies.find(function (c) { return c.id === st.selected; })
@@ -959,7 +1017,7 @@ function mountFull(el, opts) {
           on: { click: hideTip } },
         h("div", { class: "relative mx-auto max-w-6xl",
             style: { border: "3px double " + INK, padding: "1.5rem",
-              boxShadow: "4px 4px 0 rgba(31,58,92,0.25)" } },
+              boxShadow: "4px 4px 0 " + SHADOW } },
           /* haus */
           h("div", null,
             h("div", { class: "text-sm italic", style: { color: FAINT } },
@@ -1064,7 +1122,7 @@ function mountFull(el, opts) {
                         h("span", { class: "mr-1.5 inline-block align-middle",
                             style: { width: 9, height: 9, borderRadius: "50%",
                               background: PARTY_COLORS[i],
-                              boxShadow: "1px 1px 0 rgba(31,58,92,0.3)" } }),
+                              boxShadow: "1px 1px 0 " + SHADOW } }),
                         r.name),
                       h("span", { class: "tabular-nums",
                           style: { width: 64, textAlign: "left" } }, pct(natShares[i])),
@@ -1108,7 +1166,7 @@ function mountFull(el, opts) {
                             fontSize: 12, fontWeight: "bold", textAlign: "center",
                             lineHeight: "22px",
                             border: "2px solid " + (on ? INK : "transparent"),
-                            boxShadow: on ? "2px 2px 0 rgba(31,58,92,0.35)" : "none",
+                            boxShadow: on ? "2px 2px 0 " + SHADOW : "none",
                             cursor: "pointer", padding: 0 } },
                         LETTERS[i]);
                     })),
@@ -1155,7 +1213,7 @@ function mountFull(el, opts) {
       style: {
         display: "inline-block", width: 12, height: 12, borderRadius: "50%",
         background: solid ? PARTY_COLORS[i] : mixHex(PARTY_COLORS[i], PAPER, t),
-        boxShadow: solid ? "1px 1px 0 rgba(31,58,92,0.3)" : "none",
+        boxShadow: solid ? "1px 1px 0 " + SHADOW : "none",
       } });
   }
 
@@ -1205,7 +1263,7 @@ function mountFull(el, opts) {
         h("span", { class: "mr-1.5 inline-block align-middle",
             style: { width: 9, height: 9, borderRadius: "50%",
               background: PARTY_COLORS[i],
-              boxShadow: "1px 1px 0 rgba(31,58,92,0.3)" } }),
+              boxShadow: "1px 1px 0 " + SHADOW } }),
         r.name),
       h("div", { class: "flex flex-wrap items-center vof-flokdots",
           style: { gap: 3 } },
@@ -1245,7 +1303,7 @@ function mountFull(el, opts) {
           fontFamily: 'Georgia, "Times New Roman", serif', color: INK } },
       h("div", { class: "relative mx-auto max-w-6xl",
           style: { border: "3px double " + INK, padding: "1.5rem",
-            boxShadow: "4px 4px 0 rgba(31,58,92,0.25)" } },
+            boxShadow: "4px 4px 0 " + SHADOW } },
         h("div", null, Rule()),
         h("p", { class: "mt-6 text-sm italic", style: { color: FAINT } },
           "Reikna spá …"))));
@@ -1258,7 +1316,7 @@ function mountFull(el, opts) {
           fontFamily: 'Georgia, "Times New Roman", serif', color: INK } },
       h("div", { class: "relative mx-auto max-w-6xl",
           style: { border: "3px double " + INK, padding: "1.5rem",
-            boxShadow: "4px 4px 0 rgba(31,58,92,0.25)" } },
+            boxShadow: "4px 4px 0 " + SHADOW } },
         h("div", null, Rule()),
         h("p", { class: "mt-6 text-sm" },
           "Ekki tókst að sækja spágögn. ",
@@ -1283,6 +1341,9 @@ function mountFull(el, opts) {
       }, 0);
     })
     .catch(function (e) { renderError(e && e.message); });
+
+  /* endurteikna þegar gestgjafinn skiptir um ljósa/dökku stellingu */
+  watchTheme(el, function () { if (st.data) render(); });
 }
 
 /* Compact mode — lítill spjaldi fyrir forsíðu: titill, regla,
@@ -1292,8 +1353,11 @@ function mountCompact(el, opts) {
   var dataUrl = (opts && opts.dataUrl) || DEFAULT_DATA_URL;
   var href = (opts && opts.href) || DEFAULT_HREF;
 
+  var lastFj = null;
   function render(data) {
+    applySiteTheme();
     var fj = data;
+    lastFj = fj;
     /* sömu akvarðanörðu hlutöll og Heildarspá á spásíðunni */
     var nat = nationalImplied(fj);
     var order = LETTER_ORDER.map(function (_, i) { return i; })
@@ -1334,6 +1398,9 @@ function mountCompact(el, opts) {
       el.appendChild(h("div", { class: "vof vofc-err" },
         "Ekki tókst að sækja spágögn."));
     });
+
+  /* endurteikna spjaldið þegar stellingin skiptist */
+  watchTheme(el, function () { if (lastFj) render(lastFj); });
 }
 
 /* ---------- breið útgáfa (data-vofan-spa-wide) ---------- */
@@ -1406,6 +1473,7 @@ var api = {
   allocateSeats: allocateSeats,
   mapForecast: mapForecast,
   nationalImplied: nationalImplied,
+  applySiteTheme: applySiteTheme,
 };
 if (typeof window !== "undefined") window.VofanSpa = api;
 if (typeof module !== "undefined" && module.exports) module.exports = api;
