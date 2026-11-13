@@ -1,18 +1,64 @@
-const PAPER = "#F2ECDD";
-const INK = "#1F3A5C";
-const RUST = "#D2542F";
-const FAINT = "#8FA3BC";
+/* litastefna: widgetið fylgir ljósu/dökku stellingu vofan.org.
+   Risógraf-palléttin í tveimur útgáfum — ljósa er hin samþykktu,
+   dökka er „næturútgáfa“ sömu prentlistar: dökkur marinblár
+   pappír, rjóma blekur, sami ryðglóinn, ljóskerri flokkalitir
+   svo myrku flokkarnir (J, M, V) sökkvi ekki í myrkri. */
+var THEME_LIGHT = {
+  paper: "#F2ECDD", ink: "#1F3A5C", rust: "#D2542F", faint: "#8FA3BC",
+  shadow: "rgba(31,58,92,0.3)", tint: "rgba(31,58,92,0.06)",
+  parties: [
+    "#8FBF6B", "#E8912D", "#6FA0C7", "#E3C054", "#8E1F1A",
+    "#274E77", "#7B4B94", "#E07060", "#2E6B3E", "#9AA5B1",
+  ],
+};
+var THEME_DARK = {
+  paper: "#141D2B", ink: "#F2ECDD", rust: "#E0653F", faint: "#8FA3BC",
+  shadow: "rgba(0,0,0,0.45)", tint: "rgba(242,236,221,0.05)",
+  parties: [
+    "#8FBF6B", "#E8912D", "#6FA0C7", "#E3C054", "#D95748",
+    "#5C8CBF", "#9B6BB4", "#E07060", "#57A06B", "#9AA5B1",
+  ],
+};
+var PAPER = THEME_LIGHT.paper;
+var INK = THEME_LIGHT.ink;
+var RUST = THEME_LIGHT.rust;
+var FAINT = THEME_LIGHT.faint;
+var SHADOW = THEME_LIGHT.shadow;
+var TINT = THEME_LIGHT.tint;
+var PARTY_COLORS = THEME_LIGHT.parties.slice();
+var IS_DARK = false;
 
+/* les stellingu gestgjafarsíðunnar (vofan.org skiptir á .dark
+   klasanum á rótareglunni) og uppfærer alla litaviðföng */
+function applySiteTheme() {
+  if (typeof document === "undefined" || !document.documentElement ||
+      !document.documentElement.classList) return IS_DARK;
+  var dark = document.documentElement.classList.contains("dark");
+  if (dark !== IS_DARK) {
+    IS_DARK = dark;
+    var t = dark ? THEME_DARK : THEME_LIGHT;
+    PAPER = t.paper; INK = t.ink; RUST = t.rust; FAINT = t.faint;
+    SHADOW = t.shadow; TINT = t.tint; PARTY_COLORS = t.parties.slice();
+  }
+  return IS_DARK;
+}
+
+/* hlýðir á stellingarskipti gestgjafans: MutationObserver á
+   klasalistanum á rótareglunni kallar fn eftir hvert skip.
+   (vofan.org skiptir á .dark klasanum án endurhleðslu) */
+function watchTheme(el, fn) {
+  if (typeof MutationObserver === "undefined" ||
+      typeof document === "undefined" || !document.documentElement ||
+      !el || el.__vofanThemeWatch) return;
+  el.__vofanThemeWatch = true;
+  var mo = new MutationObserver(function () { fn(); });
+  mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+}
 const NAT_THRESHOLD = 5;
 const SIMS = 3000;
 const EQUAL_SEATS = 9;
 const NO_SEAT = 9;
 const MAP_H = 500;
-
-const PARTY_COLORS = [
-  "#8FBF6B", "#E8912D", "#6FA0C7", "#E3C054", "#8E1F1A",
-  "#274E77", "#7B4B94", "#E07060", "#2E6B3E", "#9AA5B1",
-];
 
 /* litablanda: opakt prentlita blanda flokks og pappírs */
 function mixHex(hex, paperHex, t) {
