@@ -36,6 +36,7 @@ averages and the timestamp travel through this repo.
 |---|---|
 | `polls/` | One JSON file per pollster release (append-only, never edited or deleted) |
 | `model/model.py` | The prediction model: `polls/` -> `public/forecast.json` |
+| `anchors/2024-results.json` | Official 2024 result per constituency (Hagstofa Íslands KOS02018); splits national polls across constituencies |
 | `public/forecast.json` | Published output; only the action writes here |
 | `.github/workflows/publish.yml` | Recompute + publish on every change to `polls/` or `model/` |
 
@@ -63,6 +64,20 @@ File name: `YYYY-MM-DD-<pollster>.json` (date = publication date).
   F Flokkur fólksins, J Sósíalistar, M Miðflokkur, P Píratar,
   S Samfylkingin, V Vinstri græn, **O = onnt og ógild**.
 - Values are percentages and must sum to 100 (± 1.5) per constituency.
+- **National polls** use `"scope": "national"` with one flat row of party
+  values (the same letters, same sum rule). The model splits them across
+  the six constituencies itself (see below), so most polls, which are only
+  published nationally, can be added as-is:
+
+  ```json
+  {
+    "pollster": "Gallup", "series": "Þjóðarpúlsinn",
+    "published": "2026-11-10",
+    "fieldwork": { "start": "2026-10-28", "end": "2026-11-09" },
+    "scope": "national",
+    "values": { "B": 5, "C": 10, "D": 25, "F": 5, "J": 2, "M": 14, "P": 3.5, "S": 30, "V": 3.5, "O": 2 }
+  }
+  ```
 - `fieldwork`, `series` and any `note` are optional metadata; `pollster`,
   `published`, `scope` and `values` are required.
 
@@ -71,23 +86,55 @@ File name: `YYYY-MM-DD-<pollster>.json` (date = publication date).
 ```json
 {
   "schema": 1,
+  "modelVersion": 2,
   "lastUpdated": "2026-11-03",
   "constituencies": { "rvkn": { "B": 5, "...": "..." } },
   "uncertainty": { "sigmaNat": 2.0, "sigmaDist": 1.4 },
-  "sources": [{ "pollster": "Gallup", "series": "Þjóðarpúlsinn", "published": "2026-11-03" }]
+  "sources": [{ "pollster": "Gallup", "series": "Þjóðarpúlsinn", "published": "2026-11-03", "weight": 0.45 }]
 }
 ```
 
 `lastUpdated` is the publication date of the newest poll in the dataset,
-not the recompute date.
+not the recompute date. `weight` in each source is the pollster's
+accuracy weight (see below).
 
-## Model v1
+## Model v2
 
-Recency-weighted average per constituency, exponential decay with a
-45-day half-life measured from the newest poll. No house effects, no
-trend, no time-to-election uncertainty scaling yet. The model is meant to
-be replaced by the fuller one built in discussion; `polls/` is the source
-of truth, so model changes can always be re-run over the same data.
+Four ingredients, in order:
+
+1. **Recency.** Exponential decay with a 45-day half-life, measured from
+   the newest poll in the dataset.
+2. **Pollster accuracy weight.** Set from how each house's final poll
+   compared with the actual result in the 2017, 2021 and 2024 elections
+   (Gallup was the most accurate final poll all three times):
+   Gallup 0.45, FVS HÍ 0.30, Maskína 0.25. Houses with no track record
+   weigh 0.125 until they have one.
+3. **Same-house de-correlation.** Each poll is additionally damped by
+   0.6 for every later poll from the same house published within 30 days
+   of it: consecutive releases share sample and method, so they are not
+   independent readings. The newest release keeps its full weight.
+4. **House-effect correction.** Every house's final polls have shown
+   systematic party deviations from the results (e.g. everyone
+   under-reading Flokkur fólksins). The correction subtracted from a
+   poll's party value is 50% of the house's mean (final poll − result)
+   deviation across those elections — shrunk to hedge against
+   over-correction on a 3-election sample. **Re-estimate after each
+   election.**
+
+National polls are house-corrected on the flat national row first, then
+split across constituencies with the swing method against
+`anchors/2024-results.json` (official Hagstofa Íslands result, KOS02018):
+a party's share in constituency c = its anchor share in c × (poll
+national share / anchor national share). Parties missing from the anchor
+(e.g. new parties) are spread uniformly. **Replace the anchor after the
+next election.**
+
+Out-of-sample backtest (house effects re-estimated leaving each election
+out): mean absolute error 1.05 points per party across 2017/2021/2024,
+vs 1.38 for the unweighted v1 average. Still no trend/late-swing
+extrapolation and no time-to-election uncertainty scaling — those are
+the next steps. `polls/` is the source of truth, so model changes can
+always be re-run over the same data.
 
 ## Update workflow (how data actually gets here)
 
