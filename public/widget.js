@@ -27,8 +27,10 @@ var THEME_DARK = {
   paper: "#141D2B", ink: "#F2ECDD", rust: "#E0653F", faint: "#8FA3BC",
   shadow: "rgba(0,0,0,0.45)", tint: "rgba(242,236,221,0.05)",
   parties: [
-    "#8FBF6B", "#E8912D", "#6FA0C7", "#E3C054", "#D95748",
-    "#5C8CBF", "#9B6BB4", "#E07060", "#57A06B", "#9AA5B1",
+    /* D (Viðreisn) ljósker í gegn og M (Miðflokkur) hélt dökkblátt —
+       í fyrri útgáfu lágu þeir of nær hver öðrum á myrka pappírnum */
+    "#8FBF6B", "#E8912D", "#7CB4E6", "#E3C054", "#D95748",
+    "#365A85", "#9B6BB4", "#E07060", "#57A06B", "#9AA5B1",
   ],
 };
 var PAPER = THEME_LIGHT.paper;
@@ -500,6 +502,20 @@ var CSS = `
 .vof .text-left { text-align: left; } .vof .text-right { text-align: right; }
 .vof .space-y-2 > * + * { margin-top: 8px; }
 .vof .gap-2 { gap: 8px; } .vof .gap-3 { gap: 12px; } .vof .gap-6 { gap: 24px; }
+/* vernd gegn þemu gestgjafans: þema vofan.org setur spennuumrykk á allar
+   fyrirsagnir í málgjöf (.prose h2 o.s.frv., sértæki 0-1-1 sigur á
+   almenna endurstillingunni .vof *) — innan widgetins tilhneigum við
+   aftur til núlls og látum eigin flokkastjóra (mt-6, mb-2 …) ráða */
+.vof h2, .vof h3, .vof h4, .vof p { margin: 0; }
+
+/* útvalseins spildið (valið kjördæmi): stýrt með flexi, ekki hreiðruðu
+   neti — spilið vinstri, hin fimm reitirnir í fastan dálk hægra megin.
+   Flexregnurnar eru skýrar en netnálgunin og eiga sér engar
+   ráðgátur í sjálfvirkri reitastöðu; á þróngum skjá fellur allt í
+   stakan dálk í DOM-röð */
+.vof .vof-selrow { display: flex; flex-direction: column; gap: 12px; }
+.vof .vof-selmain { display: flex; flex-direction: column; min-width: 0; }
+.vof .vof-selcol { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 /* ---- útgáfur eftir BREIDD ÍLÁTSINS (container queries), ekki skjásins:
      widgetið aðlagar sér hvar sem það er sett inn (t.d. 680 px
      dálkur í Ghost-þema jafnar við farsímaútgáfuna) ---- */
@@ -510,6 +526,12 @@ var CSS = `
 @container vof (min-width: 1024px) {
   .vof .lg\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .vof .lg\\:col-span-2 { grid-column: span 2 / span 2; }
+  /* útvalseins spildið: tvöfalda breidd vinstri, fastur dálkur hægra */
+  .vof .vof-selrow { flex-direction: row; }
+  .vof .vof-selmain { flex: 2 1 0; }
+  .vof .vof-selcol { flex: 1 1 0; }
+  .vof .vof-selcol > * { flex: 1 1 auto; height: auto; }
+  .vof .vof-selmain > * { flex: 1 1 auto; }
 }
 
 /* ---- farsímaútgáfa og fest hólf (samþykkt hönnun) ---- */
@@ -738,6 +760,13 @@ function SeatDots(o) {
     : o.bare
     ? { w: 13, f: 8, shadow: "1px 1px 0 " + SHADOW, gap: 4 }
     : { w: 18, f: 10, shadow: "2px 2px 0 " + SHADOW, gap: 4 };
+  /* Suðvesturkjördæmi (12+2 = 14 punktar) flæði út reitnum á
+     1080 px pappírsbreidd vofan.org — stór safn fá heldur minni
+     punkta svo röðin verði alltaf ein (línuþrá í laginu fyrir
+     pappírsbreiddina sem breyktist úr 1152 í 1080 px) */
+  if (!o.tiny && !o.bare && dist.length + eqs.length > 11) {
+    ds = { w: 15, f: 8, shadow: "2px 2px 0 " + SHADOW, gap: 3 };
+  }
   function dot(d) {
     return h("span", {
       title: (d.j ? "Jöfnunarsæti: " : "") + d.name,
@@ -1022,13 +1051,16 @@ function mountFull(el, opts) {
           h("div", null,
             h("div", { class: "text-sm italic", style: { color: FAINT } },
               subline.join(" · "))),
-          h("div", { class: "mt-3" }, Rule()),
+
+          /* kort — undirfyrirsögn í stað skilafjár undir „Uppfært“ */
+          h("h2", { class: "mt-6 mb-2 text-sm font-bold uppercase tracking-widest",
+              style: { color: RUST } }, "Kort"),
 
           /* kort + spá — í DOM-röð: aðalkort, höfuðborgarkort,
              kjördæmareitir, Heildarspá. Á skjá setur hnitanetið kortin
              hlið við hlið og reitina í vinstri tveimur dálkum;
              á farsíma fellur allt í eina dálka í DOM-röð */
-          h("div", { class: "mt-6 grid gap-6 lg:grid-cols-3",
+          h("div", { class: "grid gap-6 lg:grid-cols-3",
               style: { rowGap: 0, columnGap: 24 } },
             h("div", { class: "lg:col-span-2",
                 style: { border: "1px solid " + INK, padding: 8,
@@ -1047,12 +1079,12 @@ function mountFull(el, opts) {
               /* ÞINGMANNAPUNKTAR — reitirnir teygjast (flex-1) svo þetta
                  svæði haldi alltaf sömu hæð og Heildarspá hægra megin;
                  valið kjördæmi stækkar til vinstri og hin fimm liggja
-                 í dálki hægra megin */
+                 í fastan dálki hægra megin (vof-selrow/vof-selcol) */
               h("h2", { class: "mt-6 mb-2 text-sm font-bold uppercase tracking-widest",
                   style: { color: RUST } }, "Þingmenn eftir kjördæmum"),
               sel
-                ? h("div", { class: "flex-1 grid gap-3 lg:grid-cols-3" },
-                    h("div", { class: "lg:col-span-2" },
+                ? h("div", { class: "flex-1 vof-selrow" },
+                    h("div", { class: "vof-selmain" },
                       /* útfellt spildi: aðeins titill og þáttatafla —
                          punktaröð valins kjördæmis er á kortasprettiglugganum
                          og sætataölurnar í töflunni, svo spildið passi í
@@ -1073,8 +1105,7 @@ function mountFull(el, opts) {
                                   lineHeight: 1, marginLeft: 8 } }, "✕"))),
                         h("div", { class: "mt-2 flex-1" },
                           ConstitTable(sel, polls, selDr.alloc, selDr.eq)))),
-                    h("div", { class: "grid gap-2",
-                        style: { gridTemplateRows: "repeat(5, minmax(0, 1fr))" } },
+                    h("div", { class: "vof-selcol" },
                       sim.constituencies
                         .filter(function (c) { return c.id !== st.selected; })
                         .map(function (c) {
@@ -1100,11 +1131,12 @@ function mountFull(el, opts) {
                     }))),
 
             /* Heildarspá — á skjá neðst í hægri spáltnni, en á farsíma
-               á eftir kjördæmareitunum */
-            h("div", { class: "mt-5" },
+               á eftir kjördæmareitunum. Vafinn er flex-dálkur og ramminn
+               flex-1 svo hann nái alltaf sömu hæð og reitirnir til vinstri */
+            h("div", { class: "mt-6 flex flex-col" },
               h("h2", { class: "text-sm font-bold uppercase tracking-widest",
                   style: { color: RUST } }, "Heildarspá"),
-              h("div", { class: "mt-3",
+              h("div", { class: "mt-2 flex-1",
                   style: { border: "1px solid " + INK, background: PAPER,
                     padding: 12 } },
                 sim.national
@@ -1180,8 +1212,10 @@ function mountFull(el, opts) {
 
           /* ÞINGMENN EFTIR FLOKKUM — vinstri röðuð punktaröð fyrir hvern
              flokk: heill punktur = >99% líkur á a.m.k. þeim fjölda,
-             ljósari punktar til hægri = hærri fjöldi með minni líkum
-             (95% niður í 5%). Bendill sýnir fjölda og líkur. */
+             ljósari punktar til hægri = hærri fjöldi með minni líkum.
+             Litstigin eru í 10% skrefum með STÖKKU falli milli stiga
+             (90%, 80%, … 10%); allt undir 10% líkum er fellt niður.
+             Bendill sýnir fjölda og líkur. */
           h("section", { class: "mt-6" },
             h("h2", { class: "text-sm font-bold uppercase tracking-widest",
                 style: { color: RUST } }, "Þingmenn eftir flokkum"),
@@ -1199,9 +1233,11 @@ function mountFull(el, opts) {
      hver punktur fái sín eigin breytur (loka í lykkju) */
   function makeFlokDot(i, k, solid, geq) {
     var L = geq(k) * 100;
-    var level = solid ? null : Math.max(5, Math.floor(L / 5) * 5);
+    var level = solid ? null : Math.max(10, Math.floor(L / 10) * 10);
     var label = solid ? ">99% líkur" : level + "% líkur";
-    var t = solid ? 1 : 0.15 + (0.65 * (level - 5)) / 90;
+    /* stökk litstig: hvert 10% stig fær fastan blæ — 90% → 0.85,
+       80% → 0.75, … 10% → 0.05 — svo fallið milli stiga sjáist vel */
+    var t = solid ? 1 : 0.05 + 0.01 * (level - 10);
     var text = k + (k === 1 ? " þingmaður · " : " þingmenn · ") + label;
     var ev = dotHover(text);
     ev.click = function (e) {
@@ -1220,8 +1256,8 @@ function mountFull(el, opts) {
   /* röð fyrir einn flokk í "Þingmenn eftir flokkum" */
   function flokRow(r, i) {
     /* líkur á a.m.k. X þingmönnum — hægri endi röðarinnar er hæsta X
-       með ≥5% líkum, vinstri endi hæsta X með >99% líkum;
-       punktarnir ljókka eftir því sem líkurnar minnka */
+       með ≥10% líkum, vinstri endi hæsta X með >99% líkum;
+       punktarnir ljókka í 10% stökkum eftir því sem líkurnar minnka */
     var n = r.samples.length;
     var sorted = r.samples.slice().sort(function (a, b) { return a - b; });
     function geq(x) {
@@ -1243,12 +1279,12 @@ function mountFull(el, opts) {
     }
     var hi = xs[0];
     for (var xj = 0; xj < xs.length; xj++) {
-      if (geq(xs[xj]) >= 0.05) hi = xs[xj];
+      if (geq(xs[xj]) >= 0.10) hi = xs[xj];
       else break;
     }
     /* einn punktur fyrir HVERT mögulegt sætatölu: punktur nr. k stendur
        fyrir "k þingmenn". Fyrstu `lo` punktar eru fullir (>99% líkur á
-       a.m.k. þeim fjölda), hver næsti fær lit næsta 5% stigs */
+       a.m.k. þeim fjölda), hver næsti fær lit sitt 10% stigs */
     var dots = [];
     for (var k = 1; k <= hi; k++) {
       dots.push(makeFlokDot(i, k, solidAt(k), geq));
