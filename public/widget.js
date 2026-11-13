@@ -623,18 +623,33 @@ function setAttrs(el, attrs) {
     var v = attrs[k];
     if (v == null) continue;
     if (k === "class") el.setAttribute("class", v);
-    else if (k === "style") {
-      if (typeof v === "string") el.style.cssText = v;
-      else for (var s in v) {
-        var val = v[s];
-        /* tölur fá "px", eins og React gerir (width: 9 -> "9px") */
-        if (typeof val === "number") val = val + "px";
-        el.style[s] = val;
-      }
-    } else if (k === "on") {
+    else if (k === "style") applyStyle(el, v);
+    else if (k === "on") {
       for (var e in v) el.addEventListener(e, v[e]);
     } else el.setAttribute(k, String(v));
   }
+}
+/* stílgildi á hnút — tölur fá "px", eins og React gerir (width: 9 -> "9px");
+   sér fall svo hægt sé að endurnýja stíl tiltekinna hnúta án þess að
+   teikna allt viðmótið upp aftur */
+function applyStyle(el, v) {
+  if (typeof v === "string") { el.style.cssText = v; return; }
+  for (var s in v) {
+    var val = v[s];
+    if (typeof val === "number") val = val + "px";
+    el.style[s] = val;
+  }
+}
+/* finnur fyrsta hnút með klasaorðið — notað til að uppfæra einstaka
+   hluti viðmótsins án heildaruppteikningar */
+function findByClass(root, cls) {
+  if (root && String(root.className || "").split(" ").indexOf(cls) >= 0) return root;
+  var kids = (root && root.children) || [];
+  for (var i = 0; i < kids.length; i++) {
+    var hit = findByClass(kids[i], cls);
+    if (hit) return hit;
+  }
+  return null;
 }
 function addKid(el, c) {
   if (c == null || c === false) return;
@@ -721,7 +736,10 @@ function InsetMap(sim, selected, onSelect) {
   }
   return h("div", { style: { border: "1px solid " + INK, padding: 8, background: PAPER } },
     hs("svg", { viewBox: "0 0 " + I.W + " " + I.H,
-        "preserveAspectRatio": "xMidYMin meet", class: "vof-mapsvg",
+        /* YMid: teikningin skalar eftir breidd og lóðrétta tómrúminu
+           skiptist þá jafnt ofan og neðan — áður lá kortið uppi í
+           ramma með miklu tómu rúmi fyrir neðan */
+        "preserveAspectRatio": "xMidYMid meet", class: "vof-mapsvg",
         style: { width: "100%", height: MAP_H } },
       hs("rect", { x: 0, y: 0, width: I.W, height: I.H, fill: TINT }),
       I.ctx.map(function (m) {
@@ -759,14 +777,10 @@ function SeatDots(o) {
     ? { w: 10, f: 0, shadow: "1px 1px 0 " + SHADOW, gap: 2 }
     : o.bare
     ? { w: 13, f: 8, shadow: "1px 1px 0 " + SHADOW, gap: 4 }
-    : { w: 18, f: 10, shadow: "2px 2px 0 " + SHADOW, gap: 4 };
-  /* Suðvesturkjördæmi (12+2 = 14 punktar) flæði út reitnum á
-     1080 px pappírsbreidd vofan.org — stór safn fá heldur minni
-     punkta svo röðin verði alltaf ein (línuþrá í laginu fyrir
-     pappírsbreiddina sem breyktist úr 1152 í 1080 px) */
-  if (!o.tiny && !o.bare && dist.length + eqs.length > 11) {
-    ds = { w: 15, f: 8, shadow: "2px 2px 0 " + SHADOW, gap: 3 };
-  }
+    : { w: 15, f: 8, shadow: "2px 2px 0 " + SHADOW, gap: 3 };
+  /* allar kjördæmareitir nota sömu punktastærð (15 px) svo röðin
+     ljóki jafnt og punktaröðunum verði raðað yfir reitina — áður
+     fékk Suðvestur (14 punktar) minni punkta en hin (18 px) */
   function dot(d) {
     return h("span", {
       title: (d.j ? "Jöfnunarsæti: " : "") + d.name,
@@ -970,7 +984,9 @@ function mountFull(el, opts) {
   function toggleCoalition(i) {
     if (st.coalition.has(i)) st.coalition.delete(i);
     else st.coalition.add(i);
-    render();
+    /* aðeins meirihlutahlutirnir uppfærðast — ekki heildaruppteiknun,
+       svo síðan ristist ekki (hnútarnir halda sér stað) */
+    updateCoalition();
   }
   function pick(cid, src) {
     st.selected = cid;
@@ -980,6 +996,39 @@ function mountFull(el, opts) {
   function clearSel() {
     st.selected = null;
     render();
+  }
+
+  /* MEIRIHLUTAMYNDUN ÁN RISAR: smellur á flokkahnappa eða boga punkta
+     uppfæra AÐEINS bogann, samtölulínuna og hnappastílana í stað þess
+     að eyða og endurteikna öllu viðmótinu — heildaruppteiknun framkallar
+     blik í vaaranum (scroll-stýring missir festipunktinn) sem lítur
+     út fyrir að widgetinn „fari á staðinn“ */
+  function updateCoalition() {
+    if (!st.data || !st.natTotals) return;
+    var box = findByClass(el, "vof-archbox");
+    if (!box) { render(); return; } /* óvænt form — varasvörun */
+    var wrap = findByClass(box, "vof-archwrap");
+    if (wrap && wrap.children && wrap.children.length) {
+      var newSvg = ParlArch(st.natTotals, st.natShares, st.coalition,
+        toggleCoalition, dotHover);
+      wrap.replaceChild(newSvg, wrap.children[0]);
+    }
+    var btnrow = findByClass(box, "vof-btnrow");
+    if (btnrow) {
+      var order = PARTIES.map(function (_, i) { return i; })
+        .filter(function (i) { return i !== NO_SEAT && st.natTotals[i] > 0; })
+        .sort(function (a, b) { return st.natShares[b] - st.natShares[a] || a - b; });
+      (btnrow.children || []).forEach(function (b, jx) {
+        var i = order[jx];
+        if (i === undefined) return;
+        applyStyle(b, flokBtnStyle(i, st.coalition.has(i)));
+        b.setAttribute("aria-pressed", st.coalition.has(i) ? "true" : "false");
+      });
+    }
+    var sum = findByClass(box, "vof-sum");
+    if (sum && sum.parentNode) {
+      sum.parentNode.replaceChild(coalitionSum(st.coalition, st.natTotals), sum);
+    }
   }
 
   /* LÖGÐ SÆTISÚTKOMA: allar sætatölur viðmótins koma úr einni
@@ -1047,14 +1096,13 @@ function mountFull(el, opts) {
         h("div", { class: "relative mx-auto max-w-6xl",
             style: { border: "3px double " + INK, padding: "1.5rem",
               boxShadow: "4px 4px 0 " + SHADOW } },
-          /* haus */
-          h("div", null,
-            h("div", { class: "text-sm italic", style: { color: FAINT } },
+          /* haus: „Kort“ vinstra megin en „Uppfært“ hægra megin á
+             sömu línu — engin sér lína fyrir dagsetninguna */
+          h("div", { class: "mt-6 mb-2 flex items-baseline justify-between" },
+            h("h2", { class: "text-sm font-bold uppercase tracking-widest",
+                style: { color: RUST } }, "Kort"),
+            h("span", { class: "text-sm italic", style: { color: FAINT } },
               subline.join(" · "))),
-
-          /* kort — undirfyrirsögn í stað skilafjár undir „Uppfært“ */
-          h("h2", { class: "mt-6 mb-2 text-sm font-bold uppercase tracking-widest",
-              style: { color: RUST } }, "Kort"),
 
           /* kort + spá — í DOM-röð: aðalkort, höfuðborgarkort,
              kjördæmareitir, Heildarspá. Á skjá setur hnitanetið kortin
@@ -1171,17 +1219,18 @@ function mountFull(el, opts) {
                   style: { color: RUST } }, "Þingmannaspá"),
               h("span", { class: "text-xs italic", style: { color: FAINT } },
                 "63 þingmenn")),
-            h("div", { class: "mt-2",
+            h("div", { class: "mt-2 vof-archbox",
                 style: { border: "1px solid " + INK, background: PAPER,
                   padding: 12 } },
-              ParlArch(natTotals, natShares, coalition, toggleCoalition, dotHover),
+              h("div", { class: "vof-archwrap" },
+                ParlArch(natTotals, natShares, coalition, toggleCoalition, dotHover)),
               /* MEIRIHLUTAMYNDUN — smelltu á flokkapunkta eða punkt í
                  boganum til að telja samstarfsflokka; þeir flytjast
                  til vinstri í boganum */
               h("div", { class: "mt-6" },
                 h("div", { class: "text-xs font-bold uppercase tracking-widest",
                     style: { color: FAINT } }, "Meirihlutamyndun"),
-                h("div", { class: "mt-2 flex flex-wrap items-center gap-2" },
+                h("div", { class: "mt-2 flex flex-wrap items-center gap-2 vof-btnrow" },
                   PARTIES.map(function (_, i) { return i; })
                     .filter(function (i) { return i !== NO_SEAT && natTotals[i] > 0; })
                     .sort(function (a, b) { return natShares[b] - natShares[a] || a - b; })
@@ -1190,16 +1239,7 @@ function mountFull(el, opts) {
                       return h("button", {
                           "aria-pressed": on ? "true" : "false",
                           on: { click: function () { toggleCoalition(i); } },
-                          style: { display: "inline-block", width: 26, height: 26,
-                            borderRadius: "50%",
-                            background: on ? PARTY_COLORS[i]
-                              : mixHex(PARTY_COLORS[i], PAPER, 0.35),
-                            color: on ? "rgba(242,236,221,0.9)" : INK,
-                            fontSize: 12, fontWeight: "bold", textAlign: "center",
-                            lineHeight: "22px",
-                            border: "2px solid " + (on ? INK : "transparent"),
-                            boxShadow: on ? "2px 2px 0 " + SHADOW : "none",
-                            cursor: "pointer", padding: 0 } },
+                          style: flokBtnStyle(i, on) },
                         LETTERS[i]);
                     })),
                 /* Lýsing + samtölulína (vof-darea): fast hólf á öllum skjám
@@ -1211,10 +1251,9 @@ function mountFull(el, opts) {
                   coalitionSum(coalition, natTotals))))),
 
           /* ÞINGMENN EFTIR FLOKKUM — vinstri röðuð punktaröð fyrir hvern
-             flokk: heill punktur = >99% líkur á a.m.k. þeim fjölda,
-             ljósari punktar til hægri = hærri fjöldi með minni líkum.
-             Litstigin eru í 10% skrefum með STÖKKU falli milli stiga
-             (90%, 80%, … 10%); allt undir 10% líkum er fellt niður.
+             flokk: heill punktur = >99% líkur á a.m.k. þeim fjölda.
+             FJÓGUR litstig með stökkum falli milli stiga: 75%+, 50%+
+             og 25%+ — allt undir 25% líkum er fellt niður.
              Bendill sýnir fjölda og líkur. */
           h("section", { class: "mt-6" },
             h("h2", { class: "text-sm font-bold uppercase tracking-widest",
@@ -1233,11 +1272,12 @@ function mountFull(el, opts) {
      hver punktur fái sín eigin breytur (loka í lykkju) */
   function makeFlokDot(i, k, solid, geq) {
     var L = geq(k) * 100;
-    var level = solid ? null : Math.max(10, Math.floor(L / 10) * 10);
-    var label = solid ? ">99% líkur" : level + "% líkur";
-    /* stökk litstig: hvert 10% stig fær fastan blæ — 90% → 0.85,
-       80% → 0.75, … 10% → 0.05 — svo fallið milli stiga sjáist vel */
-    var t = solid ? 1 : 0.05 + 0.01 * (level - 10);
+    /* fjögur litstig: heill (>99%), 75%+, 50%+ og 25%+ — tölurnar
+       eru fastir blæir með stórum mun á milli svo hvatningin
+       milli stiga sjáist greinilega; undir 25% kemur enginn punktur */
+    var level = solid ? null : L >= 75 ? 75 : L >= 50 ? 50 : 25;
+    var label = solid ? ">99% líkur" : level + "%+ líkur";
+    var t = solid ? 1 : level === 75 ? 0.75 : level === 50 ? 0.45 : 0.15;
     var text = k + (k === 1 ? " þingmaður · " : " þingmenn · ") + label;
     var ev = dotHover(text);
     ev.click = function (e) {
@@ -1256,8 +1296,8 @@ function mountFull(el, opts) {
   /* röð fyrir einn flokk í "Þingmenn eftir flokkum" */
   function flokRow(r, i) {
     /* líkur á a.m.k. X þingmönnum — hægri endi röðarinnar er hæsta X
-       með ≥10% líkum, vinstri endi hæsta X með >99% líkum;
-       punktarnir ljókka í 10% stökkum eftir því sem líkurnar minnka */
+       með ≥25% líkum, vinstri endi hæsta X með >99% líkum;
+       punktar undir 25% eru fellir niður */
     var n = r.samples.length;
     var sorted = r.samples.slice().sort(function (a, b) { return a - b; });
     function geq(x) {
@@ -1279,12 +1319,12 @@ function mountFull(el, opts) {
     }
     var hi = xs[0];
     for (var xj = 0; xj < xs.length; xj++) {
-      if (geq(xs[xj]) >= 0.10) hi = xs[xj];
+      if (geq(xs[xj]) >= 0.25) hi = xs[xj];
       else break;
     }
     /* einn punktur fyrir HVERT mögulegt sætatölu: punktur nr. k stendur
        fyrir "k þingmenn". Fyrstu `lo` punktar eru fullir (>99% líkur á
-       a.m.k. þeim fjölda), hver næsti fær lit sitt 10% stigs */
+       a.m.k. þeim fjölda), hver næsti fær lit sitt af fjórum stigum */
     var dots = [];
     for (var k = 1; k <= hi; k++) {
       dots.push(makeFlokDot(i, k, solidAt(k), geq));
@@ -1310,6 +1350,21 @@ function mountFull(el, opts) {
   }
 
   /* samtölulína meirihluta (vof-sum) */
+  /* stíll flokkahnapps í Meirihlutamyndun — sér fall svo hægt sé að
+     endurnýja stílinn hnapp fyrir hnapp án heildaruppteikningar */
+  function flokBtnStyle(i, on) {
+    return { display: "inline-block", width: 26, height: 26,
+      borderRadius: "50%",
+      background: on ? PARTY_COLORS[i]
+        : mixHex(PARTY_COLORS[i], PAPER, 0.35),
+      color: on ? "rgba(242,236,221,0.9)" : INK,
+      fontSize: 12, fontWeight: "bold", textAlign: "center",
+      lineHeight: "22px",
+      border: "2px solid " + (on ? INK : "transparent"),
+      boxShadow: on ? "2px 2px 0 " + SHADOW : "none",
+      cursor: "pointer", padding: 0 };
+  }
+
   function coalitionSum(coalition, natTotals) {
     var box = h("div", { class: "mt-2 text-sm vof-sum" });
     if (coalition.size === 0) return box; /* tómt — CSS færir lýsinguna í miðju */
