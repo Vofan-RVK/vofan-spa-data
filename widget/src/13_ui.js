@@ -108,7 +108,7 @@ function InsetMap(sim, selected, onSelect) {
     hs("svg", { viewBox: "0 0 " + I.W + " " + I.H,
         "preserveAspectRatio": "xMidYMin meet", class: "vof-mapsvg",
         style: { width: "100%", height: MAP_H } },
-      hs("rect", { x: 0, y: 0, width: I.W, height: I.H, fill: "rgba(31,58,92,0.06)" }),
+      hs("rect", { x: 0, y: 0, width: I.W, height: I.H, fill: TINT }),
       I.ctx.map(function (m) {
         return m.d.map(function (d) {
           return hs("path", { d: d, fill: NEI, stroke: NEI, "stroke-width": 3,
@@ -141,10 +141,10 @@ function SeatDots(o) {
       eqs.push({ name: name, i: i, key: name + "-j-" + k2, j: true });
   });
   var ds = o.tiny
-    ? { w: 10, f: 0, shadow: "1px 1px 0 rgba(31,58,92,0.35)", gap: 2 }
+    ? { w: 10, f: 0, shadow: "1px 1px 0 " + SHADOW, gap: 2 }
     : o.bare
-    ? { w: 13, f: 8, shadow: "1px 1px 0 rgba(31,58,92,0.35)", gap: 4 }
-    : { w: 18, f: 10, shadow: "2px 2px 0 rgba(31,58,92,0.35)", gap: 4 };
+    ? { w: 13, f: 8, shadow: "1px 1px 0 " + SHADOW, gap: 4 }
+    : { w: 18, f: 10, shadow: "2px 2px 0 " + SHADOW, gap: 4 };
   function dot(d) {
     return h("span", {
       title: (d.j ? "Jöfnunarsæti: " : "") + d.name,
@@ -245,7 +245,7 @@ function ParlArch(totals, shares, coalition, onToggle, dotHover) {
       }
       attrs.on = ev;
       return hs("g", null,
-        hs("circle", { cx: p.x + 2, cy: p.y + 2, r: dotR, fill: "rgba(31,58,92,0.3)" }),
+        hs("circle", { cx: p.x + 2, cy: p.y + 2, r: dotR, fill: SHADOW }),
         hs("circle", attrs)
       );
     })
@@ -275,7 +275,7 @@ function ConstitTable(c, polls, drawAlloc, drawEq) {
             h("td", { class: "pr-2 font-semibold" },
               h("span", { class: "mr-1.5 inline-block align-middle",
                 style: { width: 9, height: 9, borderRadius: "50%", background: PARTY_COLORS[i],
-                  boxShadow: "1px 1px 0 rgba(31,58,92,0.3)" } }),
+                  boxShadow: "1px 1px 0 " + SHADOW } }),
               p.name),
             h("td", { class: "text-right tabular-nums" }, pct(polls[c.id][i])),
             h("td", { class: "text-right font-bold tabular-nums" },
