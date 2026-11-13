@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Vofan spáreiknir v2  —  polls/ -> public/forecast.json
+Vofan spáreiknir v3  —  polls/ -> public/forecast.json
 =====================================================
 
 Reads every poll file in polls/, computes the widget's input numbers and
@@ -51,8 +51,29 @@ national-poll disaggregation:
     the newest release keeps its full weight, each nearby older one loses
     40%.
 
-Still deliberately simple: no trend/late-swing extrapolation and no
-time-to-election uncertainty scaling yet — those are the next steps.
+  * Time-to-election uncertainty (v3): the sigma written to forecast.json
+    grows with the distance to election day. It is calibrated on the
+    poll-average-vs-result record of the 2017/2021/2024 Alþingi
+    elections: for every election the is-wiki poll tables were pooled
+    into horizon buckets and the error of the bucket average vs the
+    actual result was measured (per party, per election). Pooled RMSE
+    rises from ~3.4 in the final month to ~5.0 beyond a year out, and a
+    sigma^2 = a + b*horizon least-squares fit reproduces it
+    (SIGMA_NAT_A / SIGMA_NAT_B below). The number carries both polling
+    error and genuine opinion change between now and election day, which
+    is exactly what the widget's band should express. ELECTION_DATE is
+    the nominal 2028 date; override with the VOFAN_ELECTION_DATE env
+    variable (YYYY-MM-DD) for a snap election.
+
+  * Partial constituency polls (v3): a "scope": "constituency" file may
+    carry a SUBSET of the six constituencies (regional media usually
+    publish only the one or two rows of their area, e.g. Gallup's
+    Suðurkjördæmi subsample). The model corrects and uses exactly the
+    rows present; a constituency is averaged only over the polls that
+    cover it.
+
+Still deliberately simple: no trend/late-swing extrapolation yet — that
+is the next step.
 
 Run:  python3 model/model.py   (from the repo root or from model/)
 """
@@ -60,6 +81,7 @@ Run:  python3 model/model.py   (from the repo root or from model/)
 import datetime as dt
 import json
 import math
+import os
 import pathlib
 import sys
 
@@ -70,9 +92,34 @@ OUT_PATH = ROOT / "public" / "forecast.json"
 PARTIES = ["B", "C", "D", "F", "J", "M", "P", "S", "V", "O"]  # O = onnt/ógilt
 CONSTITUENCIES = ["rvkn", "rvks", "sv", "nv", "na", "s"]
 HALF_LIFE_DAYS = 45.0
-SIGMA_NAT = 2.0
-SIGMA_DIST = 1.4
 SUM_TOLERANCE = 1.5  # constituency values must sum to 100 +- this
+
+# v3: nominal next Alþingi election date. Override for a snap election
+# with the VOFAN_ELECTION_DATE environment variable (YYYY-MM-DD).
+ELECTION_DATE_DEFAULT = dt.date(2028, 11, 30)
+
+# v3: sigma^2(horizon) = SIGMA_NAT_A + SIGMA_NAT_B * days-to-election,
+# least-squares fit to the pooled poll-average-vs-result RMSE of the
+# 2017/2021/2024 elections, bucketed by horizon (final month ~3.4,
+# >1 year out ~5.0). Re-fit after each election.
+SIGMA_NAT_A = 12.76
+SIGMA_NAT_B = 0.01414
+SIGMA_DIST_RATIO = 0.7  # constituency sigma = 0.7 x national (as in v2: 1.4/2.0)
+
+
+def election_date():
+    env = os.environ.get("VOFAN_ELECTION_DATE")
+    if env:
+        return dt.date.fromisoformat(env)
+    return ELECTION_DATE_DEFAULT
+
+
+def sigma_nat(horizon_days):
+    return math.sqrt(SIGMA_NAT_A + SIGMA_NAT_B * max(0, horizon_days))
+
+
+def sigma_dist(horizon_days):
+    return SIGMA_DIST_RATIO * sigma_nat(horizon_days)
 
 # ---- v2 calibration constants (re-estimate after each election) -----------
 
@@ -173,11 +220,16 @@ def validate(polls):
                 sys.exit(f"ERROR: {p['_file']} sums to {total:.1f}, "
                          f"expected 100 +- {SUM_TOLERANCE}")
             continue
-        missing_c = [c for c in CONSTITUENCIES if c not in values]
-        if missing_c:
-            sys.exit(f"ERROR: {p['_file']} is missing constituencies: "
-                     f"{', '.join(missing_c)}")
-        for c in CONSTITUENCIES:
+        # constituency scope: at least one constituency, a subset is fine
+        present = [c for c in CONSTITUENCIES if c in values]
+        if not present:
+            sys.exit(f"ERROR: {p['_file']} has no constituency rows "
+                     f"(expected a subset of: {', '.join(CONSTITUENCIES)})")
+        unknown = [c for c in values if c not in CONSTITUENCIES]
+        if unknown:
+            sys.exit(f"ERROR: {p['_file']} has unknown constituencies: "
+                     f"{', '.join(unknown)}")
+        for c in present:
             row = values[c]
             missing = [b for b in PARTIES if b not in row]
             if missing:
@@ -245,15 +297,17 @@ def swing_disaggregate(nat, anchor):
 
 def corrected_values(p):
     """Apply the house-effect correction to one poll and return its
-    per-constituency values. Constituency polls are corrected row by row;
-    national polls are corrected on the flat row first and then split
-    across constituencies with the swing method. Every row is
-    renormalised to sum to exactly 100."""
+    per-constituency values. Constituency polls are corrected row by row
+    (a poll may cover a subset of the six); national polls are corrected
+    on the flat row first and then split across constituencies with the
+    swing method. Every row is renormalised to sum to exactly 100."""
     if p.get("scope") == "national":
         return swing_disaggregate(corrected_national(p), load_anchor())
     corr = house_correction(p["pollster"])
     out = {}
-    for c in CONSTITUENCIES:
+    for c in p["values"]:  # only the constituencies the poll covers
+        if c not in CONSTITUENCIES:
+            continue
         row = {}
         total = 0.0
         for b in PARTIES:
@@ -286,9 +340,10 @@ def overlap_factor(p, polls):
     return OVERLAP_DAMP ** newer
 
 
-def model_v2(polls):
+def compute(polls):
     """Recency x accuracy x overlap weighted average of house-corrected,
-    (for national polls) swing-disaggregated polls."""
+    (for national polls) swing-disaggregated polls. A constituency only
+    averages over the polls that actually cover it."""
     ref = max(dt.date.fromisoformat(p["published"]) for p in polls)
     sums = {c: {b: 0.0 for b in PARTIES} for c in CONSTITUENCIES}
     wsums = {c: 0.0 for c in CONSTITUENCIES}
@@ -297,10 +352,13 @@ def model_v2(polls):
         damp = overlap_factor(p, polls)
         w = house_weight(p["pollster"]) * 0.5 ** (days / HALF_LIFE_DAYS) * damp
         vals = corrected_values(p)
-        for c in CONSTITUENCIES:
+        for c in vals:  # only constituencies this poll covers
             for b in PARTIES:
                 sums[c][b] += w * vals[c][b]
             wsums[c] += w
+    for c in CONSTITUENCIES:
+        if wsums[c] == 0.0:
+            sys.exit(f"ERROR: no poll data at all for constituency '{c}'")
     out = {}
     for c in CONSTITUENCIES:
         out[c] = {b: round(sums[c][b] / wsums[c], 2) for b in PARTIES}
@@ -310,14 +368,20 @@ def model_v2(polls):
 def main():
     polls = load_polls()
     validate(polls)
-    constituencies, latest = model_v2(polls)
+    constituencies, latest = compute(polls)
+
+    edate = election_date()
+    horizon = (edate - latest).days
+    s_nat = round(sigma_nat(horizon), 2)
+    s_dist = round(sigma_dist(horizon), 2)
 
     forecast = {
         "schema": 1,
-        "modelVersion": 2,
+        "modelVersion": 3,
         "lastUpdated": latest.isoformat(),
+        "electionDate": edate.isoformat(),
         "constituencies": constituencies,
-        "uncertainty": {"sigmaNat": SIGMA_NAT, "sigmaDist": SIGMA_DIST},
+        "uncertainty": {"sigmaNat": s_nat, "sigmaDist": s_dist},
         "sources": [
             {
                 "pollster": p["pollster"],
@@ -342,7 +406,9 @@ def main():
         print(f"  - {p['_file']}: {p['pollster']} {p.get('series') or ''} "
               f"({p['published']}, {p['scope']}) "
               f"weight {house_weight(p['pollster'])}{extra}")
-    print(f"\nlastUpdated: {latest.isoformat()}\n")
+    print(f"\nlastUpdated: {latest.isoformat()}")
+    print(f"election: {edate.isoformat()} ({horizon} days away)")
+    print(f"sigmaNat: {s_nat}  sigmaDist: {s_dist}\n")
     header = "kjördæmi  " + "  ".join(f"{b:>5}" for b in PARTIES)
     print(header)
     for c in CONSTITUENCIES:
