@@ -5,76 +5,76 @@
   "electionDate": "2028-11-30",
   "constituencies": {
     "rvkn": {
-      "B": 5.73,
-      "C": 9.46,
-      "D": 24.69,
-      "F": 6.07,
-      "J": 1.61,
-      "M": 14.15,
-      "P": 3.47,
-      "S": 29.41,
-      "V": 3.5,
-      "O": 1.9
+      "B": 3.72,
+      "C": 10.18,
+      "D": 22.37,
+      "F": 4.76,
+      "J": 3.57,
+      "M": 11.33,
+      "P": 4.06,
+      "S": 34.8,
+      "V": 4.98,
+      "O": 0.23
     },
     "rvks": {
-      "B": 5.75,
-      "C": 10.47,
-      "D": 25.65,
-      "F": 6.13,
-      "J": 1.6,
-      "M": 15.27,
-      "P": 2.9,
-      "S": 28.23,
-      "V": 3.03,
-      "O": 0.96
+      "B": 4.12,
+      "C": 11.19,
+      "D": 22.9,
+      "F": 5.48,
+      "J": 3.42,
+      "M": 13.63,
+      "P": 2.95,
+      "S": 31.07,
+      "V": 5.02,
+      "O": 0.22
     },
     "sv": {
-      "B": 6.31,
-      "C": 9.65,
-      "D": 24.12,
-      "F": 5.58,
-      "J": 1.97,
-      "M": 15.44,
-      "P": 2.82,
-      "S": 27.92,
-      "V": 3.82,
-      "O": 2.37
+      "B": 5.47,
+      "C": 12.5,
+      "D": 30.0,
+      "F": 4.39,
+      "J": 1.71,
+      "M": 15.32,
+      "P": 2.08,
+      "S": 25.67,
+      "V": 2.62,
+      "O": 0.24
     },
     "nv": {
-      "B": 12.83,
-      "C": 4.62,
-      "D": 17.25,
-      "F": 7.63,
-      "J": 2.46,
-      "M": 24.14,
-      "P": 0.88,
-      "S": 19.21,
-      "V": 6.75,
-      "O": 4.23
+      "B": 12.52,
+      "C": 8.04,
+      "D": 23.49,
+      "F": 6.82,
+      "J": 2.1,
+      "M": 19.22,
+      "P": 1.36,
+      "S": 21.6,
+      "V": 4.67,
+      "O": 0.17
     },
     "na": {
-      "B": 11.9,
-      "C": 3.98,
-      "D": 16.09,
-      "F": 6.13,
-      "J": 0.59,
-      "M": 19.01,
-      "P": 2.75,
-      "S": 30.8,
-      "V": 5.91,
-      "O": 2.82
+      "B": 12.65,
+      "C": 5.37,
+      "D": 18.21,
+      "F": 5.81,
+      "J": 1.94,
+      "M": 19.48,
+      "P": 1.56,
+      "S": 28.51,
+      "V": 6.32,
+      "O": 0.14
     },
     "s": {
-      "B": 13.7,
-      "C": 5.5,
-      "D": 22.98,
-      "F": 6.35,
-      "J": 1.49,
-      "M": 20.31,
-      "P": 1.79,
-      "S": 17.5,
-      "V": 4.73,
-      "O": 5.65
+      "B": 10.96,
+      "C": 6.84,
+      "D": 27.01,
+      "F": 8.25,
+      "J": 1.39,
+      "M": 19.13,
+      "P": 1.03,
+      "S": 22.64,
+      "V": 2.42,
+      "O": 0.33
     }
   },
   "uncertainty": {
@@ -116,6 +116,102 @@
       "pollster": "Maskína",
       "series": "Fylgi flokka á Alþingi",
       "published": "2026-03-23",
+      "weight": 0.25
+    },
+    {
+      "pollster": "Gallup",
+      "series": "Þjóðarpúlsinn",
+      "published": "2026-04-02",
+      "weight": 0.45
+    },
+    {
+      "pollster": "Maskína",
+      "series": "Fylgi flokka á Alþingi",
+      "published": "2026-04-20",
+      "weight": 0.25
+    },
+    {
+      "pollster": "Gallup",
+      "series": "Þjóðarpúlsinn",
+      "published": "2026-05-02",
+      "weight": 0.45
+    },
+    {
+      "pollster": "Maskína",
+      "series": "Fylgi flokka á Alþingi",
+      "published": "2026-05-20",
+      "weight": 0.25
+    },
+    {
+      "pollster": "Gallup",
+      "series": "Þjóðarpúlsinn",
+      "published": "2026-06-02",
+      "weight": 0.45
+    },
+    {
+      "pollster": "Maskína",
+      "series": "Fylgi flokka á Alþingi",
+      "published": "2026-06-23",
+      "weight": 0.25
+    },
+    {
+      "pollster": "Gallup",
+      "series": "Þjóðarpúlsinn",
+      "published": "2026-07-02",
+      "weight": 0.45
+    },
+    {
+      "pollster": "Gallup",
+      "series": "Þjóðarpúlsinn",
+      "published": "2026-07-03",
+      "weight": 0.45
+    },
+    {
+      "pollster": "Maskína",
+      "series": "Fylgi flokka á Alþingi",
+      "published": "2026-07-21",
+      "weight": 0.25
+    },
+    {
+      "pollster": "Gallup",
+      "series": "Þjóðarpúlsinn",
+      "published": "2026-08-05",
+      "weight": 0.45
+    },
+    {
+      "pollster": "Maskína",
+      "series": "Fylgi flokka á Alþingi",
+      "published": "2026-08-20",
+      "weight": 0.25
+    },
+    {
+      "pollster": "Gallup",
+      "series": "Þjóðarpúlsinn",
+      "published": "2026-09-02",
+      "weight": 0.45
+    },
+    {
+      "pollster": "Maskína",
+      "series": "Fylgi flokka á Alþingi",
+      "published": "2026-09-23",
+      "weight": 0.25
+    },
+    {
+      "pollster": "Gallup",
+      "series": "Þjóðarpúlsinn",
+      "published": "2026-09-30",
+      "weight": 0.45
+    },
+    {
+      "pollster": "Gallup",
+      "series": "Þjóðarpúlsinn",
+      "published": "2026-09-30",
+      "weight": 0.45
+    },
+    {
+      "pollster": "Maskína",
+      "series": "Fylgi flokka á Alþingi",
+      "published": "2026-10-23",
       "weight": 0.25
     },
     {
