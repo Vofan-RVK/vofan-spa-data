@@ -97,7 +97,10 @@ function MainMap(sim, selected, onSelect) {
     hs("rect", { x: 0, y: 0, width: M.W, height: M.H, fill: "url(#vof-sea)" }),
     fills("nv"), fills("na"), fills("s"), fills("sv"), fills("rvkn"), fills("rvks"),
     edge("nv", INK, 8), edge("na", INK, 8), edge("s", INK, 8), edge("sv", INK, 8),
-    edge("rvk", INK, 8), edge("rvkn", INK, 8), edge("rvks", INK, 8),
+    /* engin rísbrún fyrir „rvk“ (gamla sameinuðu útlínan): hún skar
+       í gegnum RN/RS löndin og teiknaði dökk rákir inni í rauða
+       borginni — hvor hlutinn fær sína eigin rísbrún (rvkn + rvks) */
+    edge("rvkn", INK, 8), edge("rvks", INK, 8),
     /* rísbringur útvalsins merkir NÚ valið EITT (liturinn breytist ekki)
        — 12 einingar: sýnilegt merki á farsíma, en gleypir ekki litlu
        höfuðborgarsvæði (RVKN er 124 einingar breitt) */
@@ -138,6 +141,8 @@ function InsetMap(sim, selected, onSelect) {
         "preserveAspectRatio": "xMidYMid meet", class: "vof-mapsvg",
         style: { width: "100%", height: MAP_H } },
       hs("rect", { x: 0, y: 0, width: I.W, height: I.H, fill: TINT }),
+      /* Nágrennið: grátt land út fyrir borgina — teiknar NÚ líka undir
+         SV-svæðin svo blái flokkstaliturinn flýtur aldrei út á opið haf */
       I.ctx.map(function (m) {
         return m.d.map(function (d) {
           return hs("path", { d: d, fill: NEI, stroke: NEI, "stroke-width": 3,
@@ -145,7 +150,7 @@ function InsetMap(sim, selected, onSelect) {
         });
       }),
       fills("sv"), fills("rvkn"), fills("rvks"),
-      edge("sv", INK, 2.2), edge("rvk", INK, 2.2), edge("rvkn", INK, 2.2), edge("rvks", INK, 2.2),
+      edge("sv", INK, 2.2), edge("rvkn", INK, 2.2), edge("rvks", INK, 2.2),
       /* rísbringurinn er eina valmerkið — 4 einingar til að sjást vel */
       selected ? edge(selected, RUST, 4) : null
     )
