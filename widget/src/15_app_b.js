@@ -244,6 +244,33 @@ function mountCompact(el, opts) {
     });
 }
 
+/* ---------- breið útgáfa (data-vofan-spa-wide) ---------- */
+/* Widgetið getur brotið sér út úr þröngum efnisdálki gestgjafans
+   (t.d. 680 px dálkur Ghost-þema) og miðað sér við 1080 px
+   pappírsbreidd síðunnar; mælt í clientWidth svo lóðréttu
+   skrunarstöngin raska ekki. Útgáfan sjálf (container queries)
+   ræður svo af hinni raunverulegu breidd. */
+function applyWide(el) {
+  if (!el || el.__vofanWide) return;
+  el.__vofanWide = true;
+  function fit() {
+    var de = document.documentElement;
+    var vw = de && de.clientWidth;
+    if (!vw) return;
+    var t = Math.min(vw - 48, 1080);
+    var p = el.parentNode;
+    var pw = p && p.clientWidth;
+    if (!pw) return;
+    var m = Math.round((pw - t) / 2);
+    el.style.width = t + "px";
+    el.style.marginLeft = m + "px";
+    el.style.marginRight = m + "px";
+  }
+  fit();
+  if (typeof window !== "undefined" && window.addEventListener)
+    window.addEventListener("resize", fit);
+}
+
 /* ---------- forritaskil ---------- */
 function mount(el, opts) {
   opts = opts || {};
@@ -252,8 +279,9 @@ function mount(el, opts) {
     return el && el.getAttribute ? el.getAttribute(k) : null;
   }
   var mode = opts.mode || attr("data-vofan-spa-mode") || attr("data-vofan-spa") || "full";
+  var wide = opts.wide !== undefined ? opts.wide : attr("data-vofan-spa-wide");
   if (String(mode) === "compact") mountCompact(el, opts);
-  else mountFull(el, opts);
+  else { if (wide) applyWide(el); mountFull(el, opts); }
 }
 
 /* sjálfvirk uppsetning á [data-vofan-spa] stökum */
@@ -268,6 +296,7 @@ function autoInit() {
         n.getAttribute("data-vofan-spa") || "full",
       dataUrl: n.getAttribute("data-vofan-spa-data") || undefined,
       href: n.getAttribute("data-vofan-spa-href") || undefined,
+      wide: n.getAttribute("data-vofan-spa-wide") || undefined,
     });
   }
 }
