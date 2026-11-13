@@ -1,0 +1,35 @@
+name: Reikna spá
+
+on:
+  push:
+    branches: [main]
+    paths: ["polls/**", "model/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Keyra spáreikninn
+        run: python model/model.py
+
+      - name: Gefa út forecast.json
+        run: |
+          git config user.name "Vofan"
+          git config user.email "Vofan@users.noreply.github.com"
+          git add public/forecast.json
+          if git diff --cached --quiet; then
+            echo "forecast.json óbreytt — ekkert til að gefa út"
+          else
+            git commit -m "Uppfæri spáreikning"
+            git push
+          fi
