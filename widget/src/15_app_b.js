@@ -28,8 +28,10 @@
 
           /* ÞINGMENN EFTIR FLOKKUM — vinstri röðuð punktaröð fyrir hvern
              flokk: heill punktur = >99% líkur á a.m.k. þeim fjölda,
-             ljósari punktar til hægri = hærri fjöldi með minni líkum
-             (95% niður í 5%). Bendill sýnir fjölda og líkur. */
+             ljósari punktar til hægri = hærri fjöldi með minni líkum.
+             Litstigin eru í 10% skrefum með STÖKKU falli milli stiga
+             (90%, 80%, … 10%); allt undir 10% líkum er fellt niður.
+             Bendill sýnir fjölda og líkur. */
           h("section", { class: "mt-6" },
             h("h2", { class: "text-sm font-bold uppercase tracking-widest",
                 style: { color: RUST } }, "Þingmenn eftir flokkum"),
@@ -47,9 +49,11 @@
      hver punktur fái sín eigin breytur (loka í lykkju) */
   function makeFlokDot(i, k, solid, geq) {
     var L = geq(k) * 100;
-    var level = solid ? null : Math.max(5, Math.floor(L / 5) * 5);
+    var level = solid ? null : Math.max(10, Math.floor(L / 10) * 10);
     var label = solid ? ">99% líkur" : level + "% líkur";
-    var t = solid ? 1 : 0.15 + (0.65 * (level - 5)) / 90;
+    /* stökk litstig: hvert 10% stig fær fastan blæ — 90% → 0.85,
+       80% → 0.75, … 10% → 0.05 — svo fallið milli stiga sjáist vel */
+    var t = solid ? 1 : 0.05 + 0.01 * (level - 10);
     var text = k + (k === 1 ? " þingmaður · " : " þingmenn · ") + label;
     var ev = dotHover(text);
     ev.click = function (e) {
@@ -68,8 +72,8 @@
   /* röð fyrir einn flokk í "Þingmenn eftir flokkum" */
   function flokRow(r, i) {
     /* líkur á a.m.k. X þingmönnum — hægri endi röðarinnar er hæsta X
-       með ≥5% líkum, vinstri endi hæsta X með >99% líkum;
-       punktarnir ljókka eftir því sem líkurnar minnka */
+       með ≥10% líkum, vinstri endi hæsta X með >99% líkum;
+       punktarnir ljókka í 10% stökkum eftir því sem líkurnar minnka */
     var n = r.samples.length;
     var sorted = r.samples.slice().sort(function (a, b) { return a - b; });
     function geq(x) {
@@ -91,12 +95,12 @@
     }
     var hi = xs[0];
     for (var xj = 0; xj < xs.length; xj++) {
-      if (geq(xs[xj]) >= 0.05) hi = xs[xj];
+      if (geq(xs[xj]) >= 0.10) hi = xs[xj];
       else break;
     }
     /* einn punktur fyrir HVERT mögulegt sætatölu: punktur nr. k stendur
        fyrir "k þingmenn". Fyrstu `lo` punktar eru fullir (>99% líkur á
-       a.m.k. þeim fjölda), hver næsti fær lit næsta 5% stigs */
+       a.m.k. þeim fjölda), hver næsti fær lit sitt 10% stigs */
     var dots = [];
     for (var k = 1; k <= hi; k++) {
       dots.push(makeFlokDot(i, k, solidAt(k), geq));
