@@ -67,15 +67,18 @@ function MainMap(sim, selected, onSelect) {
   sim.constituencies.forEach(function (c) { byId[c.id] = c; });
   function tint(cid) {
     var i = leaderOf(byId[cid]);
-    /* útvölduð kjördæmi fá næstum fullan flokkslit (0.95) — 0.75-blandan
-       var of föl fyrir ljósa flokksliti (D varð gráblátt, S fölbleikt)
-       og liturinn varð óljós á farsímaskjá */
-    return mixHex(PARTY_COLORS[i], PAPER, selected === cid ? 0.95 : 0.55);
+    /* liturinn er HINN SAMI fyrir öll kjördæmi sama flokks — og breytist
+       EKKI þótt kjördæmi sé valið. Fyrra kerfi (0.95 í vali) braut
+       litakótinn: valið SV lést sem annar blár en NV og valið RN
+       sem annar rauður en RS. Valið er nú merkt AÐEINS með rísbringi */
+    return mixHex(PARTY_COLORS[i], PAPER, 0.55);
   }
   function fills(cid) {
     return (O[cid] || []).map(function (d) {
       return hs("path", { d: d, fill: tint(cid), "fill-rule": "evenodd",
-        stroke: tint(cid), "stroke-width": 10, "stroke-linejoin": "round",
+        /* 16: þétt strýking með sama lit lokar litlum saum milli
+           RVKN og RVKS — annars sést undirliggjandi SV-blár í gegn */
+        stroke: tint(cid), "stroke-width": 16, "stroke-linejoin": "round",
         on: { click: function () { onSelect(cid); } }, style: { cursor: "pointer" } });
     });
   }
@@ -95,10 +98,10 @@ function MainMap(sim, selected, onSelect) {
     fills("nv"), fills("na"), fills("s"), fills("sv"), fills("rvkn"), fills("rvks"),
     edge("nv", INK, 8), edge("na", INK, 8), edge("s", INK, 8), edge("sv", INK, 8),
     edge("rvk", INK, 8), edge("rvkn", INK, 8), edge("rvks", INK, 8),
-    /* rísbringur útvalsins: nún 9 (áður 14) — á farsíma gleypa
-       þykkar línur litla höfuðborgarsvæðið svo allt hafði sér
-       eitt af tveimur rauðum tónum á höfuð- og aukakorti */
-    selected ? edge(selected, RUST, 9) : null
+    /* rísbringur útvalsins merkir NÚ valið EITT (liturinn breytist ekki)
+       — 12 einingar: sýnilegt merki á farsíma, en gleypir ekki litlu
+       höfuðborgarsvæði (RVKN er 124 einingar breitt) */
+    selected ? edge(selected, RUST, 12) : null
   );
 }
 
@@ -109,10 +112,9 @@ function InsetMap(sim, selected, onSelect) {
   sim.constituencies.forEach(function (c) { byId[c.id] = c; });
   function tint(cid) {
     var i = leaderOf(byId[cid]);
-    /* útvölduð kjördæmi fá næstum fullan flokkslit (0.95) — 0.75-blandan
-       var of föl fyrir ljósa flokksliti (D varð gráblátt, S fölbleikt)
-       og liturinn varð óljós á farsímaskjá */
-    return mixHex(PARTY_COLORS[i], PAPER, selected === cid ? 0.95 : 0.55);
+    /* sama regla og í aðalkortinu: liturinn breytist EKKI í vali —
+       valið merkjast aðeins með rísbringi, flokkstaliturinn helst óbreyttur */
+    return mixHex(PARTY_COLORS[i], PAPER, 0.55);
   }
   var NEI = mixHex("#9AA5B1", PAPER, 0.28);
   function fills(cid) {
@@ -144,7 +146,8 @@ function InsetMap(sim, selected, onSelect) {
       }),
       fills("sv"), fills("rvkn"), fills("rvks"),
       edge("sv", INK, 2.2), edge("rvk", INK, 2.2), edge("rvkn", INK, 2.2), edge("rvks", INK, 2.2),
-      selected ? edge(selected, RUST, 3.2) : null
+      /* rísbringurinn er eina valmerkið — 4 einingar til að sjást vel */
+      selected ? edge(selected, RUST, 4) : null
     )
   );
 }
