@@ -32,8 +32,13 @@ var THEME_DARK = {
       í myrku hamnum (v3.8 ljóskeraningin dugði ekki); nú er bæði
       ljósmerkismunur og litblærarmunur á milli þeirra, og munurinn
       heldur sér jafnvel í túntu kjördæmakortanna */
+    /* D (Viðreisn) mjög ljóst rísblátt (#A6D8F2) en M (Miðflokkur)
+      sért mið-blátt (#4F7CA3) — helmingi dekkra en D en sárt og glögg
+      sjálft á myrka pappírnum; v3.12 gerði M (#2E4A68) of dimmt svo
+      það bráðnaði inn í bakgrunninn, en ljósmerkismunur D og M er
+      nú rúmlega tvöfaldur og litblærarmunurinn heldur sér í boganum */
     "#8FBF6B", "#E8912D", "#A6D8F2", "#E3C054", "#D95748",
-    "#2E4A68", "#9B6BB4", "#E07060", "#57A06B", "#9AA5B1",
+    "#4F7CA3", "#9B6BB4", "#E07060", "#57A06B", "#9AA5B1",
   ],
 };
 var PAPER = THEME_LIGHT.paper;
@@ -551,6 +556,12 @@ var CSS = `
 }
 @container vof (max-width: 1023px) {
   .vof .vof-mapsvg { height: auto !important; }
+  /* Heildarspá á þröngum skjá: bókstafirnir einu stærð minni og
+     talnadálkarnir þrýstir þéttari, svo löng flokksheiti
+     (Sjálfstæðisflokkur, Framsóknarflokkur) haldi sér á eina línu */
+  .vof .vof-heildrow { font-size: 12px; }
+  .vof .vof-heildpct { width: 50px !important; }
+  .vof .vof-heildthm { width: 44px !important; }
   .vof .vof-ctable { height: auto !important; }
   .vof .vof-ctable td { padding-top: 3px; padding-bottom: 3px; }
   .vof .vof-tiny { padding: 8px !important; }
@@ -685,7 +696,10 @@ function MainMap(sim, selected, onSelect) {
   sim.constituencies.forEach(function (c) { byId[c.id] = c; });
   function tint(cid) {
     var i = leaderOf(byId[cid]);
-    return mixHex(PARTY_COLORS[i], PAPER, selected === cid ? 0.75 : 0.55);
+    /* útvölduð kjördæmi fá næstum fullan flokkslit (0.95) — 0.75-blandan
+       var of föl fyrir ljósa flokksliti (D varð gráblátt, S fölbleikt)
+       og liturinn varð óljós á farsímaskjá */
+    return mixHex(PARTY_COLORS[i], PAPER, selected === cid ? 0.95 : 0.55);
   }
   function fills(cid) {
     return (O[cid] || []).map(function (d) {
@@ -710,7 +724,10 @@ function MainMap(sim, selected, onSelect) {
     fills("nv"), fills("na"), fills("s"), fills("sv"), fills("rvkn"), fills("rvks"),
     edge("nv", INK, 8), edge("na", INK, 8), edge("s", INK, 8), edge("sv", INK, 8),
     edge("rvk", INK, 8), edge("rvkn", INK, 8), edge("rvks", INK, 8),
-    selected ? edge(selected, RUST, 14) : null
+    /* rísbringur útvalsins: nún 9 (áður 14) — á farsíma gleypa
+       þykkar línur litla höfuðborgarsvæðið svo allt hafði sér
+       eitt af tveimur rauðum tónum á höfuð- og aukakorti */
+    selected ? edge(selected, RUST, 9) : null
   );
 }
 
@@ -721,7 +738,10 @@ function InsetMap(sim, selected, onSelect) {
   sim.constituencies.forEach(function (c) { byId[c.id] = c; });
   function tint(cid) {
     var i = leaderOf(byId[cid]);
-    return mixHex(PARTY_COLORS[i], PAPER, selected === cid ? 0.75 : 0.55);
+    /* útvölduð kjördæmi fá næstum fullan flokkslit (0.95) — 0.75-blandan
+       var of föl fyrir ljósa flokksliti (D varð gráblátt, S fölbleikt)
+       og liturinn varð óljós á farsímaskjá */
+    return mixHex(PARTY_COLORS[i], PAPER, selected === cid ? 0.95 : 0.55);
   }
   var NEI = mixHex("#9AA5B1", PAPER, 0.28);
   function fills(cid) {
@@ -1102,7 +1122,7 @@ function mountFull(el, opts) {
                   })
                   .map(function (o) {
                     var r = o.r, i = o.i;
-                    return h("div", { class: "flex items-center py-1 text-sm",
+                    return h("div", { class: "flex items-center py-1 text-sm vof-heildrow",
                         style: { borderBottom: "1px dotted " + FAINT } },
                       h("span", { class: "font-semibold flex-1" },
                         h("span", { class: "mr-1.5 inline-block align-middle",
@@ -1110,9 +1130,9 @@ function mountFull(el, opts) {
                               background: PARTY_COLORS[i],
                               boxShadow: "1px 1px 0 " + SHADOW } }),
                         r.name),
-                      h("span", { class: "tabular-nums",
+                      h("span", { class: "tabular-nums vof-heildpct",
                           style: { width: 64, textAlign: "left" } }, pct(natShares[i])),
-                      h("span", { class: "font-bold tabular-nums",
+                      h("span", { class: "font-bold tabular-nums vof-heildthm",
                           style: { width: 56, textAlign: "right" } },
                         i === NO_SEAT ? "—" : natTotals[i] + " þm"));
                   }))));
