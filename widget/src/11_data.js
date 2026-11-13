@@ -4,7 +4,7 @@
    Access-Control-Allow-Origin: * og 5 mínútna skyndiminni. */
 var DEFAULT_DATA_URL =
   "https://raw.githubusercontent.com/Vofan-RVK/vofan-spa-data/main/public/forecast.json";
-var DEFAULT_HREF = "/kosningaspa/";
+var DEFAULT_HREF = "/spalikan/";
 
 /* bókstafaröð flokkanna í forecast.json; index 9 = "Auðir og ógildir" */
 var LETTER_ORDER = ["B", "C", "D", "F", "J", "M", "P", "S", "V", "O"];
