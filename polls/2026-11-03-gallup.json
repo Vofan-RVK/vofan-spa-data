@@ -1,0 +1,24 @@
+{
+  "pollster": "Gallup",
+  "series": "Þjóðarpúlsinn",
+  "published": "2026-11-03",
+  "scope": "national",
+  "values": {
+    "B": 6.1,
+    "C": 10.0,
+    "D": 24.9,
+    "F": 3.9,
+    "J": 2.8,
+    "M": 17.2,
+    "P": 2.2,
+    "S": 29.2,
+    "V": 3.5,
+    "O": 0.2
+  },
+  "fieldwork": {
+    "start": "2026-09-29",
+    "end": "2026-11-01"
+  },
+  "note": "Gallup Þjóðarpúlsinn, októbermæling (fyrsta mæling eftir þjóðaratkvæðagreiðsluna um ESB 29. ágúst). Gildi: Gallup Puls_1026/1126 og fréttaumfjöllun RÚV/Vísis 3. nóvember 2026; fullt taflaæfintýri PolitPro.",
+  "source": "https://www.gallup.is/nidurstodur/thjodarpuls/"
+}
