@@ -173,7 +173,7 @@ function mountFull(el, opts) {
                   })
                   .map(function (o) {
                     var r = o.r, i = o.i;
-                    return h("div", { class: "flex items-center py-1 text-sm",
+                    return h("div", { class: "flex items-center py-1 text-sm vof-heildrow",
                         style: { borderBottom: "1px dotted " + FAINT } },
                       h("span", { class: "font-semibold flex-1" },
                         h("span", { class: "mr-1.5 inline-block align-middle",
@@ -181,9 +181,9 @@ function mountFull(el, opts) {
                               background: PARTY_COLORS[i],
                               boxShadow: "1px 1px 0 " + SHADOW } }),
                         r.name),
-                      h("span", { class: "tabular-nums",
+                      h("span", { class: "tabular-nums vof-heildpct",
                           style: { width: 64, textAlign: "left" } }, pct(natShares[i])),
-                      h("span", { class: "font-bold tabular-nums",
+                      h("span", { class: "font-bold tabular-nums vof-heildthm",
                           style: { width: 56, textAlign: "right" } },
                         i === NO_SEAT ? "—" : natTotals[i] + " þm"));
                   }))));
