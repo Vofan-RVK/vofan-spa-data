@@ -404,7 +404,8 @@ function pct(x) {
 /* ---------- stíll ---------- */
 var CSS = `
 .vof { font-family: Georgia, "Times New Roman", serif; color: #1F3A5C;
-  background: #F2ECDD; font-size: 16px; line-height: 1.5; }
+  background: #F2ECDD; font-size: 16px; line-height: 1.5;
+  container: vof / inline-size; }
 .vof, .vof *, .vof *::before, .vof *::after { box-sizing: border-box; }
 .vof * { margin: 0; padding: 0; border: 0 solid; }
 .vof svg { display: block; vertical-align: middle; }
@@ -446,18 +447,21 @@ var CSS = `
 .vof .text-left { text-align: left; } .vof .text-right { text-align: right; }
 .vof .space-y-2 > * + * { margin-top: 8px; }
 .vof .gap-2 { gap: 8px; } .vof .gap-3 { gap: 12px; } .vof .gap-6 { gap: 24px; }
-@media (min-width: 640px) {
+/* ---- útgáfur eftir BREIDD ÍLÁTSINS (container queries), ekki skjásins:
+     widgetið aðlagar sér hvar sem það er sett inn (t.d. 680 px
+     dálkur í Ghost-þema jafnar við farsímaútgáfuna) ---- */
+@container vof (min-width: 640px) {
   .vof .sm\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .vof .sm\\:p-8 { padding: 32px; }
 }
-@media (min-width: 1024px) {
+@container vof (min-width: 1024px) {
   .vof .lg\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .vof .lg\\:col-span-2 { grid-column: span 2 / span 2; }
 }
 
 /* ---- farsímaútgáfa og fest hólf (samþykkt hönnun) ---- */
 .vof .vof-sum:empty { display: none; }
-@media (min-width: 1024px) {
+@container vof (min-width: 1024px) {
   .vof .vof-darea { display: flex; flex-direction: column; gap: 8px; height: 44px; margin-top: 12px; }
   .vof .vof-darea:has(.vof-sum:empty) { justify-content: center; }
   .vof .vof-desc { flex: 0 0 auto; margin-top: 0 !important; overflow: hidden; }
@@ -467,7 +471,7 @@ var CSS = `
   }
   .vof .vof-sum { margin-top: 0 !important; }
 }
-@media (max-width: 1023px) {
+@container vof (max-width: 1023px) {
   .vof .vof-mapsvg { height: auto !important; }
   .vof .vof-ctable { height: auto !important; }
   .vof .vof-ctable td { padding-top: 3px; padding-bottom: 3px; }
