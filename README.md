@@ -39,6 +39,9 @@ averages and the timestamp travel through this repo.
 | `anchors/2024-results.json` | Official 2024 result per constituency (Hagstofa Íslands KOS02018); splits national polls across constituencies |
 | `public/forecast.json` | Published output; only the action writes here |
 | `.github/workflows/publish.yml` | Recompute + publish on every change to `polls/` or `model/` |
+| `widget/src/` | Widget JavaScript source in 16 ordered parts (see below) |
+| `public/widget.js` | Published widget bundle; only the Byggja widget action writes here |
+| `.github/workflows/widget.yml` | Assemble `public/widget.js` from `widget/src/` and commit it |
 
 ## Poll file schema
 
@@ -103,6 +106,32 @@ environment for a snap election). The two sigmas scale with the time
 left to that date (see below): they are the honest band of
 "where will this land", not a confidence interval on the polls
 themselves.
+
+## Widget source (`widget/src/`)
+
+The widget itself (vanilla JavaScript, no dependencies, ~135 KB) is
+developed in a Vibe Work conversation and pushed here as **16 source
+parts**, named `00_`–`15_` so that plain filename sort restores the
+build order:
+
+```
+cat widget/src/* > public/widget.js
+```
+
+`03_`–`07_` are raw SVG path data for the Iceland constituency map;
+the rest are JavaScript. The **Byggja widget** action runs on every
+change under `widget/src/`, assembles the bundle, checks it with
+`node --check`, and commits `public/widget.js` back. **Reikna spá**
+(listening only to `polls/` and `model/`) does not trigger it, so
+the two actions never loop.
+
+The bundle is served to vofan.org from GitHub Pages (this repo):
+
+```
+https://vofan-rvk.github.io/vofan-spa-data/public/widget.js
+```
+
+It embeds no identity data; it only fetches `public/forecast.json`.
 
 ## Model v3
 
