@@ -1,5 +1,5 @@
 /* ============================================================
-   Kosningaspá Vofunnar — widget fyrir vofan.org
+   Spálíkan Vofunnar — widget fyrir vofan.org
    Risógraf-stíll, engar utanaðkomandi kerfishöfn.
    Gögn: vofan-spa-data (Vofan-RVK), forecast.json.
    Kjördæmamörk byggð á lögum um kosningar til Alþingis
@@ -389,7 +389,7 @@ function allocateSeats(polls) {
    Access-Control-Allow-Origin: * og 5 mínútna skyndiminni. */
 var DEFAULT_DATA_URL =
   "https://raw.githubusercontent.com/Vofan-RVK/vofan-spa-data/main/public/forecast.json";
-var DEFAULT_HREF = "/kosningaspa/";
+var DEFAULT_HREF = "/spalikan/";
 
 /* bókstafaröð flokkanna í forecast.json; index 9 = "Auðir og ógildir" */
 var LETTER_ORDER = ["B", "C", "D", "F", "J", "M", "P", "S", "V", "O"];
@@ -1472,7 +1472,7 @@ function mountCompact(el, opts) {
     el.innerHTML = "";
     el.appendChild(
       h("a", { class: "vof vofc-card", href: href },
-        h("div", { class: "vofc-title" }, "Kosningaspá Vofunnar"),
+        h("div", { class: "vofc-title" }, "Spálíkan Vofunnar"),
         h("div", { class: "vofc-rule" }, Rule()),
         h("div", { class: "vofc-strip" }, items),
         h("div", { class: "vofc-foot" },
