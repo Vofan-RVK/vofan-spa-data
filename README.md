@@ -133,6 +133,11 @@ https://vofan-rvk.github.io/vofan-spa-data/public/widget.js
 
 It embeds no identity data; it only fetches `public/forecast.json`.
 
+On a narrow host column (e.g. Ghost's 680 px article column) add
+`data-vofan-spa-wide="1"` to the mount div: the widget breaks out of the
+column and centres on the site's 1080 px paper width, measured with
+`clientWidth` (no scrollbar overflow), re-measured on window resize.
+
 ## Model v3
 
 Five ingredients, in order:
