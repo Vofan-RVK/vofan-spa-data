@@ -20,8 +20,13 @@ var THEME_DARK = {
       í myrku hamnum (v3.8 ljóskeraningin dugði ekki); nú er bæði
       ljósmerkismunur og litblærarmunur á milli þeirra, og munurinn
       heldur sér jafnvel í túntu kjördæmakortanna */
+    /* D (Viðreisn) mjög ljóst rísblátt (#A6D8F2) en M (Miðflokkur)
+      sért mið-blátt (#4F7CA3) — helmingi dekkra en D en sárt og glögg
+      sjálft á myrka pappírnum; v3.12 gerði M (#2E4A68) of dimmt svo
+      það bráðnaði inn í bakgrunninn, en ljósmerkismunur D og M er
+      nú rúmlega tvöfaldur og litblærarmunurinn heldur sér í boganum */
     "#8FBF6B", "#E8912D", "#A6D8F2", "#E3C054", "#D95748",
-    "#2E4A68", "#9B6BB4", "#E07060", "#57A06B", "#9AA5B1",
+    "#4F7CA3", "#9B6BB4", "#E07060", "#57A06B", "#9AA5B1",
   ],
 };
 var PAPER = THEME_LIGHT.paper;
