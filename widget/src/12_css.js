@@ -52,6 +52,20 @@ var CSS = `
 .vof .text-left { text-align: left; } .vof .text-right { text-align: right; }
 .vof .space-y-2 > * + * { margin-top: 8px; }
 .vof .gap-2 { gap: 8px; } .vof .gap-3 { gap: 12px; } .vof .gap-6 { gap: 24px; }
+/* vernd gegn þemu gestgjafans: þema vofan.org setur spennuumrykk á allar
+   fyrirsagnir í málgjöf (.prose h2 o.s.frv., sértæki 0-1-1 sigur á
+   almenna endurstillingunni .vof *) — innan widgetins tilhneigum við
+   aftur til núlls og látum eigin flokkastjóra (mt-6, mb-2 …) ráða */
+.vof h2, .vof h3, .vof h4, .vof p { margin: 0; }
+
+/* útvalseins spildið (valið kjördæmi): stýrt með flexi, ekki hreiðruðu
+   neti — spilið vinstri, hin fimm reitirnir í fastan dálk hægra megin.
+   Flexregnurnar eru skýrar en netnálgunin og eiga sér engar
+   ráðgátur í sjálfvirkri reitastöðu; á þróngum skjá fellur allt í
+   stakan dálk í DOM-röð */
+.vof .vof-selrow { display: flex; flex-direction: column; gap: 12px; }
+.vof .vof-selmain { display: flex; flex-direction: column; min-width: 0; }
+.vof .vof-selcol { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 /* ---- útgáfur eftir BREIDD ÍLÁTSINS (container queries), ekki skjásins:
      widgetið aðlagar sér hvar sem það er sett inn (t.d. 680 px
      dálkur í Ghost-þema jafnar við farsímaútgáfuna) ---- */
@@ -62,6 +76,12 @@ var CSS = `
 @container vof (min-width: 1024px) {
   .vof .lg\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .vof .lg\\:col-span-2 { grid-column: span 2 / span 2; }
+  /* útvalseins spildið: tvöfalda breidd vinstri, fastur dálkur hægra */
+  .vof .vof-selrow { flex-direction: row; }
+  .vof .vof-selmain { flex: 2 1 0; }
+  .vof .vof-selcol { flex: 1 1 0; }
+  .vof .vof-selcol > * { flex: 1 1 auto; height: auto; }
+  .vof .vof-selmain > * { flex: 1 1 auto; }
 }
 
 /* ---- farsímaútgáfa og fest hólf (samþykkt hönnun) ---- */
