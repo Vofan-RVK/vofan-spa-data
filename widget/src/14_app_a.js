@@ -139,13 +139,16 @@ function mountFull(el, opts) {
           h("div", null,
             h("div", { class: "text-sm italic", style: { color: FAINT } },
               subline.join(" · "))),
-          h("div", { class: "mt-3" }, Rule()),
+
+          /* kort — undirfyrirsögn í stað skilafjár undir „Uppfært“ */
+          h("h2", { class: "mt-6 mb-2 text-sm font-bold uppercase tracking-widest",
+              style: { color: RUST } }, "Kort"),
 
           /* kort + spá — í DOM-röð: aðalkort, höfuðborgarkort,
              kjördæmareitir, Heildarspá. Á skjá setur hnitanetið kortin
              hlið við hlið og reitina í vinstri tveimur dálkum;
              á farsíma fellur allt í eina dálka í DOM-röð */
-          h("div", { class: "mt-6 grid gap-6 lg:grid-cols-3",
+          h("div", { class: "grid gap-6 lg:grid-cols-3",
               style: { rowGap: 0, columnGap: 24 } },
             h("div", { class: "lg:col-span-2",
                 style: { border: "1px solid " + INK, padding: 8,
@@ -164,12 +167,12 @@ function mountFull(el, opts) {
               /* ÞINGMANNAPUNKTAR — reitirnir teygjast (flex-1) svo þetta
                  svæði haldi alltaf sömu hæð og Heildarspá hægra megin;
                  valið kjördæmi stækkar til vinstri og hin fimm liggja
-                 í dálki hægra megin */
+                 í fastan dálki hægra megin (vof-selrow/vof-selcol) */
               h("h2", { class: "mt-6 mb-2 text-sm font-bold uppercase tracking-widest",
                   style: { color: RUST } }, "Þingmenn eftir kjördæmum"),
               sel
-                ? h("div", { class: "flex-1 grid gap-3 lg:grid-cols-3" },
-                    h("div", { class: "lg:col-span-2" },
+                ? h("div", { class: "flex-1 vof-selrow" },
+                    h("div", { class: "vof-selmain" },
                       /* útfellt spildi: aðeins titill og þáttatafla —
                          punktaröð valins kjördæmis er á kortasprettiglugganum
                          og sætataölurnar í töflunni, svo spildið passi í
@@ -190,8 +193,7 @@ function mountFull(el, opts) {
                                   lineHeight: 1, marginLeft: 8 } }, "✕"))),
                         h("div", { class: "mt-2 flex-1" },
                           ConstitTable(sel, polls, selDr.alloc, selDr.eq)))),
-                    h("div", { class: "grid gap-2",
-                        style: { gridTemplateRows: "repeat(5, minmax(0, 1fr))" } },
+                    h("div", { class: "vof-selcol" },
                       sim.constituencies
                         .filter(function (c) { return c.id !== st.selected; })
                         .map(function (c) {
@@ -217,11 +219,12 @@ function mountFull(el, opts) {
                     }))),
 
             /* Heildarspá — á skjá neðst í hægri spáltnni, en á farsíma
-               á eftir kjördæmareitunum */
-            h("div", { class: "mt-5" },
+               á eftir kjördæmareitunum. Vafinn er flex-dálkur og ramminn
+               flex-1 svo hann nái alltaf sömu hæð og reitirnir til vinstri */
+            h("div", { class: "mt-6 flex flex-col" },
               h("h2", { class: "text-sm font-bold uppercase tracking-widest",
                   style: { color: RUST } }, "Heildarspá"),
-              h("div", { class: "mt-3",
+              h("div", { class: "mt-2 flex-1",
                   style: { border: "1px solid " + INK, background: PAPER,
                     padding: 12 } },
                 sim.national
