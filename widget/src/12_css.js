@@ -126,15 +126,15 @@ var CSS = `
    ljós textalitur sem myndi hverfa á pappír spjaldsins */
 /* .vof.vofc-card — samsett vísandi vegna .vof a { color: inherit }
    sem annars yrði sérstakara og yfirskyggi litinn */
+/* ENGIN hreyfing við bendil (óskið 13. nóv. 2026): hvorki translate né
+   skuggabreyting — spjaldið stendur alveg kyrrt; aðeins er slökkt á
+   undirstrikun svo texti fari ekki að skrota við höfnina */
 .vof.vofc-card { display: block; text-decoration: none;
   color: var(--vof-ink); margin: 40px 0 0;
   border: 3px double var(--vof-ink); background: var(--vof-paper);
-  padding: 12px 14px; box-shadow: 4px 4px 0 var(--vof-shadow);
-  transition: transform 0.1s ease, box-shadow 0.1s ease; }
+  padding: 12px 14px; box-shadow: 4px 4px 0 var(--vof-shadow); }
 .vofc-card:active, .vofc-card:focus, .vofc-card:hover,
 .vofc-card * { text-decoration: none; }
-.vofc-card:hover { transform: translate(-1px, -1px);
-  box-shadow: 5px 5px 0 var(--vof-shadow); }
 .vofc-title { font-size: 16px; font-weight: 700; }
 .vofc-rule { margin-top: 6px; }
 .vofc-strip { display: flex; flex-wrap: nowrap; gap: 4px 14px;
