@@ -1,0 +1,25 @@
+{
+  "pollster": "Maskína",
+  "series": "Fylgi flokka á Alþingi",
+  "published": "2026-03-23",
+  "scope": "national",
+  "values": {
+    "B": 7.1,
+    "C": 14.0,
+    "D": 16.1,
+    "F": 5.8,
+    "J": 3.5,
+    "M": 18.4,
+    "P": 5.0,
+    "S": 25.5,
+    "V": 4.4,
+    "O": 0.2
+  },
+  "fieldwork": {
+    "start": "2026-02-26",
+    "end": "2026-03-19"
+  },
+  "sample": 2617,
+  "note": "Maskínukönnun um fylgi flokka á Alþingi, mars; tveir vinnuvangar 26. febr.–3. mars og 12.–19. mars. Birt 23. mars 2026 (Vísir; RÚV 24. mars).",
+  "source": "https://www.visir.is/g/20262859852d/fylgi-sam-fylkingar-ekki-verid-minna-i-eitt-ar"
+}
