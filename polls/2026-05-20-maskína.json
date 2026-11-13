@@ -1,0 +1,25 @@
+{
+  "pollster": "Maskína",
+  "series": "Fylgi flokka á Alþingi",
+  "published": "2026-05-20",
+  "scope": "national",
+  "values": {
+    "B": 7.9,
+    "C": 14.4,
+    "D": 19.8,
+    "F": 4.7,
+    "J": 3.9,
+    "M": 15.0,
+    "P": 4.0,
+    "S": 25.0,
+    "V": 5.1,
+    "O": 0.2
+  },
+  "fieldwork": {
+    "start": "2026-04-17",
+    "end": "2026-05-12"
+  },
+  "sample": 2810,
+  "note": "Maskínukönnun um fylgi flokka á Alþingi, maí; byggð á þremur könnunum fyrir sveitastjórnarkosningar (17.–24. apríl, 29. apríl–6. mai, 7.–12. mai; 2.810 svarendur). Athugið: gildi lesin úr fréttaumfjöllun Vísis (málsgrein, námunduð); ekki birtist full nákvæm tafla á netinu. Píratar mældust hér yfir 4% en Sjálfstæðisflokkur 'tæp tuttugu'.",
+  "source": "https://www.visir.is/g/20262886714d/sjalfstaedisflokkurinn-enn-a-flugi"
+}
