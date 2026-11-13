@@ -145,3 +145,64 @@ function simulate(polls, sigmaNat, sigmaDist, seed) {
   };
 }
 
+/* v3.2: LÖGÐ SÆTISÚTKOMA — þingmannatölur alls viðmótsins eru reiknaðar
+   BEINT úr birtu spáhlutföllum (könnunarblöndunni, "Spá %"), ekki úr
+   sýnatökum, svo sætin samsvari ávalt hlutföllum í töflunum:
+   d'Hondt fyrir kjördæmassæti (allir flokkar, enginn þröskuldur) og
+   108. gr. fyrir jöfnunarsætin níu, þar sem 5% landsþröskuldurinn
+   gildir aðeins jöfnunarsæti. Sýnatökurnar lifa áfram fyrir
+   óvissumörkin (líkurdálka og punkta í Þingmenn eftir flokkum). */
+function allocateSeats(polls) {
+  const P = PARTIES.length;
+  const C = CONSTITUENCIES.length;
+  const votesC = CONSTITUENCIES.map((c, ci) =>
+    polls[c.id].map((sh) => (sh / 100) * c.voters));
+  const natVotes = new Array(P).fill(0);
+  let allVotes = 0;
+  for (let c = 0; c < C; c++) {
+    for (let i = 0; i < P; i++) natVotes[i] += votesC[c][i];
+    allVotes += CONSTITUENCIES[c].voters;
+  }
+  const natShare = natVotes.map((v) => (v / allVotes) * 100);
+  const qualified = natShare.map((sh, i) => i !== NO_SEAT && sh >= NAT_THRESHOLD);
+
+  const totals = new Array(P).fill(0);
+  const winsByC = [];
+  for (let c = 0; c < C; c++) {
+    const vq = votesC[c].map((v, i) => (i !== NO_SEAT ? v : 0));
+    const wins = dHondt(vq, CONSTITUENCIES[c].seats);
+    winsByC.push(wins);
+    for (let i = 0; i < P; i++) totals[i] += wins[i];
+  }
+
+  /* jöfnunarsæti eftir 108. gr. — sömu regla og í sýnatökunum */
+  const eqWins = new Array(P).fill(0);
+  const eqInC = CONSTITUENCIES.map(() => new Array(P).fill(0));
+  const eqLeft = CONSTITUENCIES.map((c) => c.total - c.seats);
+  const cand = [];
+  for (let i = 0; i < P; i++) {
+    if (!qualified[i]) continue;
+    for (let k = 1; k <= EQUAL_SEATS; k++)
+      cand.push({ i, v: natVotes[i] / (totals[i] + k) });
+  }
+  cand.sort((a, b) => b.v - a.v);
+  for (let n = 0; n < EQUAL_SEATS && n < cand.length; n++) {
+    const i = cand[n].i;
+    let bestC = -1, bestT = -1;
+    for (let c = 0; c < C; c++) {
+      if (eqLeft[c] <= 0) continue;
+      const t = polls[CONSTITUENCIES[c].id][i] / (winsByC[c][i] + eqInC[c][i] + 1);
+      if (t > bestT) { bestT = t; bestC = c; }
+    }
+    if (bestC < 0) break;
+    eqLeft[bestC]--;
+    eqInC[bestC][i]++;
+    eqWins[i]++;
+  }
+  for (let i = 0; i < P; i++) totals[i] += eqWins[i];
+  return {
+    constituencies: CONSTITUENCIES.map((c, ci) => ({ id: c.id, alloc: winsByC[ci], eq: eqInC[ci] })),
+    national: totals,
+    natShare: natShare,
+  };
+}
