@@ -1,0 +1,24 @@
+{
+  "pollster": "Gallup",
+  "series": "Þjóðarpúlsinn",
+  "published": "2026-03-03",
+  "scope": "national",
+  "values": {
+    "B": 6.6,
+    "C": 10.9,
+    "D": 18.1,
+    "F": 5.8,
+    "J": 2.0,
+    "M": 20.3,
+    "P": 2.7,
+    "S": 28.5,
+    "V": 4.2,
+    "O": 0.9
+  },
+  "fieldwork": {
+    "start": "2026-02-02",
+    "end": "2026-03-01"
+  },
+  "note": "Gallup Þjóðarpúlsinn, febrúarmæling. Gildi: Gallup Puls_0226 (cdnx.gallup.is) og gallup.is-frétt 3. mars 2026.",
+  "source": "https://www.gallup.is/nidurstodur/thjodarpuls/"
+}
