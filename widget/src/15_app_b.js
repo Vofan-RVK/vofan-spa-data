@@ -274,10 +274,23 @@ function applyWide(el) {
     var de = document.documentElement;
     var vw = de && de.clientWidth;
     if (!vw) return;
-    var t = Math.min(vw - 48, 1080);
     var p = el.parentNode;
     var pw = p && p.clientWidth;
     if (!pw) return;
+    var t = Math.min(vw - 48, 1080);
+    /* FARSÍMI/ÞRÖNGUR SKJÁ: ekkert útborð — breidd og jaðrar eru
+       núllstillt og spjaldið fylgir eðlilegum flæði síðunnar.
+       clientWidth foreldrisins HLÝÐUR undirstriki þemans, og áður
+       miðaði útreikningurinn við það: á farsíma fékk spjaldið fast
+       breidd + jáðra sem rúðust ofan í efnisrúmmálið og ýtti
+       widgetnum 24 px til hægri, út að skjábrún. Þegar markbreiddin
+       er ekkert stærri en foreldrið er útborðið augljóslega óþarft. */
+    if (t <= pw) {
+      el.style.width = "auto";
+      el.style.marginLeft = "0px";
+      el.style.marginRight = "0px";
+      return;
+    }
     var m = Math.round((pw - t) / 2);
     el.style.width = t + "px";
     el.style.marginLeft = m + "px";
