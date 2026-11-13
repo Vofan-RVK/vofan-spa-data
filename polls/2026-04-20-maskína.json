@@ -1,0 +1,25 @@
+{
+  "pollster": "Maskína",
+  "series": "Fylgi flokka á Alþingi",
+  "published": "2026-04-20",
+  "scope": "national",
+  "values": {
+    "B": 7.2,
+    "C": 12.8,
+    "D": 18.1,
+    "F": 5.8,
+    "J": 3.0,
+    "M": 16.4,
+    "P": 4.7,
+    "S": 27.7,
+    "V": 4.3,
+    "O": -0.0
+  },
+  "fieldwork": {
+    "start": "2026-03-25",
+    "end": "2026-04-16"
+  },
+  "sample": 1786,
+  "note": "Maskínukönnun um fylgi flokka á Alþingi, apríl; vinnuvangar 25.–31. mars og 8.–16. apríl. Birt 20. apríl 2026 (Vísir; maskina.is 'Samfylkingin áfram stærsti flokkurinn').",
+  "source": "https://maskina.is/samfylkingin-afram-staersti-flokkurinn/"
+}
