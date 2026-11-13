@@ -141,8 +141,10 @@ function InsetMap(sim, selected, onSelect) {
         "preserveAspectRatio": "xMidYMid meet", class: "vof-mapsvg",
         style: { width: "100%", height: MAP_H } },
       hs("rect", { x: 0, y: 0, width: I.W, height: I.H, fill: TINT }),
-      /* Nágrennið: grátt land út fyrir borgina — teiknar NÚ líka undir
-         SV-svæðin svo blái flokkstaliturinn flýtur aldrei út á opið haf */
+      /* Nágrennið: eitt samhengt grátt land — útlínan er sótt úr
+         sameiningu landsins og kjördæmisvæðanna, svo ströndin á
+         bakgrunnskortinu línast nákvæmlega upp við strönd svæðanna
+         (engar fljótandi eyjar og engin sköpuð útlínuhörfur) */
       I.ctx.map(function (m) {
         return m.d.map(function (d) {
           return hs("path", { d: d, fill: NEI, stroke: NEI, "stroke-width": 3,
