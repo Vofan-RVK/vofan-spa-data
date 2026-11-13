@@ -232,7 +232,7 @@ function mountCompact(el, opts) {
     el.innerHTML = "";
     el.appendChild(
       h("a", { class: "vof vofc-card", href: href },
-        h("div", { class: "vofc-title" }, "Kosningaspá Vofunnar"),
+        h("div", { class: "vofc-title" }, "Spálíkan Vofunnar"),
         h("div", { class: "vofc-rule" }, Rule()),
         h("div", { class: "vofc-strip" }, items),
         h("div", { class: "vofc-foot" },
