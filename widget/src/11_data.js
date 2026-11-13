@@ -14,7 +14,7 @@ function mapForecast(fj) {
   var ids = {};
   CONSTITUENCIES.forEach(function (c) {
     var row = fj.constituencies[c.id];
-    if (!row) throw new Error("Vantar kjördæmið " + c.id + " í spágöggnun");
+    if (!row) throw new Error("Vantar kjördæmið " + c.id + " í spágögnun");
     ids[c.id] = true;
     polls[c.id] = LETTER_ORDER.map(function (L) {
       var v = Number(row[L]);
