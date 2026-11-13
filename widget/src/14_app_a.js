@@ -58,7 +58,9 @@ function mountFull(el, opts) {
   function toggleCoalition(i) {
     if (st.coalition.has(i)) st.coalition.delete(i);
     else st.coalition.add(i);
-    render();
+    /* aðeins meirihlutahlutirnir uppfærðast — ekki heildaruppteiknun,
+       svo síðan ristist ekki (hnútarnir halda sér stað) */
+    updateCoalition();
   }
   function pick(cid, src) {
     st.selected = cid;
@@ -68,6 +70,39 @@ function mountFull(el, opts) {
   function clearSel() {
     st.selected = null;
     render();
+  }
+
+  /* MEIRIHLUTAMYNDUN ÁN RISAR: smellur á flokkahnappa eða boga punkta
+     uppfæra AÐEINS bogann, samtölulínuna og hnappastílana í stað þess
+     að eyða og endurteikna öllu viðmótinu — heildaruppteiknun framkallar
+     blik í vaaranum (scroll-stýring missir festipunktinn) sem lítur
+     út fyrir að widgetinn „fari á staðinn“ */
+  function updateCoalition() {
+    if (!st.data || !st.natTotals) return;
+    var box = findByClass(el, "vof-archbox");
+    if (!box) { render(); return; } /* óvænt form — varasvörun */
+    var wrap = findByClass(box, "vof-archwrap");
+    if (wrap && wrap.children && wrap.children.length) {
+      var newSvg = ParlArch(st.natTotals, st.natShares, st.coalition,
+        toggleCoalition, dotHover);
+      wrap.replaceChild(newSvg, wrap.children[0]);
+    }
+    var btnrow = findByClass(box, "vof-btnrow");
+    if (btnrow) {
+      var order = PARTIES.map(function (_, i) { return i; })
+        .filter(function (i) { return i !== NO_SEAT && st.natTotals[i] > 0; })
+        .sort(function (a, b) { return st.natShares[b] - st.natShares[a] || a - b; });
+      (btnrow.children || []).forEach(function (b, jx) {
+        var i = order[jx];
+        if (i === undefined) return;
+        applyStyle(b, flokBtnStyle(i, st.coalition.has(i)));
+        b.setAttribute("aria-pressed", st.coalition.has(i) ? "true" : "false");
+      });
+    }
+    var sum = findByClass(box, "vof-sum");
+    if (sum && sum.parentNode) {
+      sum.parentNode.replaceChild(coalitionSum(st.coalition, st.natTotals), sum);
+    }
   }
 
   /* LÖGÐ SÆTISÚTKOMA: allar sætatölur viðmótins koma úr einni
@@ -135,14 +170,13 @@ function mountFull(el, opts) {
         h("div", { class: "relative mx-auto max-w-6xl",
             style: { border: "3px double " + INK, padding: "1.5rem",
               boxShadow: "4px 4px 0 " + SHADOW } },
-          /* haus */
-          h("div", null,
-            h("div", { class: "text-sm italic", style: { color: FAINT } },
+          /* haus: „Kort“ vinstra megin en „Uppfært“ hægra megin á
+             sömu línu — engin sér lína fyrir dagsetninguna */
+          h("div", { class: "mt-6 mb-2 flex items-baseline justify-between" },
+            h("h2", { class: "text-sm font-bold uppercase tracking-widest",
+                style: { color: RUST } }, "Kort"),
+            h("span", { class: "text-sm italic", style: { color: FAINT } },
               subline.join(" · "))),
-
-          /* kort — undirfyrirsögn í stað skilafjár undir „Uppfært“ */
-          h("h2", { class: "mt-6 mb-2 text-sm font-bold uppercase tracking-widest",
-              style: { color: RUST } }, "Kort"),
 
           /* kort + spá — í DOM-röð: aðalkort, höfuðborgarkort,
              kjördæmareitir, Heildarspá. Á skjá setur hnitanetið kortin
@@ -259,14 +293,15 @@ function mountFull(el, opts) {
                   style: { color: RUST } }, "Þingmannaspá"),
               h("span", { class: "text-xs italic", style: { color: FAINT } },
                 "63 þingmenn")),
-            h("div", { class: "mt-2",
+            h("div", { class: "mt-2 vof-archbox",
                 style: { border: "1px solid " + INK, background: PAPER,
                   padding: 12 } },
-              ParlArch(natTotals, natShares, coalition, toggleCoalition, dotHover),
+              h("div", { class: "vof-archwrap" },
+                ParlArch(natTotals, natShares, coalition, toggleCoalition, dotHover)),
               /* MEIRIHLUTAMYNDUN — smelltu á flokkapunkta eða punkt í
                  boganum til að telja samstarfsflokka; þeir flytjast
                  til vinstri í boganum */
               h("div", { class: "mt-6" },
                 h("div", { class: "text-xs font-bold uppercase tracking-widest",
                     style: { color: FAINT } }, "Meirihlutamyndun"),
-                h("div", { class: "mt-2 flex flex-wrap items-center gap-2" },
+                h("div", { class: "mt-2 flex flex-wrap items-center gap-2 vof-btnrow" },
