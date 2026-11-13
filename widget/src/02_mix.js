@@ -17,4 +17,3 @@ function leaderOf(constit) {
   });
   return best;
 }
-
