@@ -1,0 +1,24 @@
+{
+  "pollster": "Gallup",
+  "series": "Þjóðarpúlsinn",
+  "published": "2026-04-02",
+  "scope": "national",
+  "values": {
+    "B": 4.7,
+    "C": 10.0,
+    "D": 19.5,
+    "F": 5.8,
+    "J": 2.0,
+    "M": 20.6,
+    "P": 3.0,
+    "S": 30.0,
+    "V": 4.3,
+    "O": 0.1
+  },
+  "fieldwork": {
+    "start": "2026-03-02",
+    "end": "2026-03-31"
+  },
+  "note": "Gallup Þjóðarpúlsinn, marsmæling. Gildi: Gallup Puls_0326 og RÚV 2. apríl 2026 ('Framsókn mælist ekki með mann á þingi').",
+  "source": "https://www.gallup.is/nidurstodur/thjodarpuls/"
+}
