@@ -152,8 +152,7 @@
       h("div", { class: "relative mx-auto max-w-6xl",
           style: { border: "3px double " + INK, padding: "1.5rem",
             boxShadow: "4px 4px 0 rgba(31,58,92,0.25)" } },
-        h("h1", { class: "text-3xl font-bold" }, "Kosningaspá Vofunnar"),
-        h("div", { class: "mt-3" }, Rule()),
+        h("div", null, Rule()),
         h("p", { class: "mt-6 text-sm italic", style: { color: FAINT } },
           "Reikna spá …"))));
   }
@@ -166,8 +165,7 @@
       h("div", { class: "relative mx-auto max-w-6xl",
           style: { border: "3px double " + INK, padding: "1.5rem",
             boxShadow: "4px 4px 0 rgba(31,58,92,0.25)" } },
-        h("h1", { class: "text-3xl font-bold" }, "Kosningaspá Vofunnar"),
-        h("div", { class: "mt-3" }, Rule()),
+        h("div", null, Rule()),
         h("p", { class: "mt-6 text-sm" },
           "Ekki tókst að sækja spágögn. ",
           h("span", { class: "italic", style: { color: FAINT } }, msg || "")))));
