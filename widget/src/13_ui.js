@@ -145,6 +145,13 @@ function SeatDots(o) {
     : o.bare
     ? { w: 13, f: 8, shadow: "1px 1px 0 " + SHADOW, gap: 4 }
     : { w: 18, f: 10, shadow: "2px 2px 0 " + SHADOW, gap: 4 };
+  /* Suðvesturkjördæmi (12+2 = 14 punktar) flæði út reitnum á
+     1080 px pappírsbreidd vofan.org — stór safn fá heldur minni
+     punkta svo röðin verði alltaf ein (línuþrá í laginu fyrir
+     pappírsbreiddina sem breyktist úr 1152 í 1080 px) */
+  if (!o.tiny && !o.bare && dist.length + eqs.length > 11) {
+    ds = { w: 15, f: 8, shadow: "2px 2px 0 " + SHADOW, gap: 3 };
+  }
   function dot(d) {
     return h("span", {
       title: (d.j ? "Jöfnunarsæti: " : "") + d.name,
