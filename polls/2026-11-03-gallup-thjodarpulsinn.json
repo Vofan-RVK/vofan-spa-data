@@ -1,0 +1,16 @@
+{
+  "pollster": "Gallup",
+  "series": "Þjóðarpúlsinn",
+  "published": "2026-11-03",
+  "fieldwork": { "start": "2026-10-21", "end": "2026-11-02" },
+  "scope": "constituency",
+  "note": "Placeholder values from the widget prototype, shaped to the 3 Nov 2026 Þjóðarpúlsinn release. Replace with the real constituency tables when we build the model.",
+  "values": {
+    "rvkn": { "B": 5,   "C": 10,  "D": 25,  "F": 5,   "J": 2,   "M": 14,  "P": 3.5, "S": 30,  "V": 3.5, "O": 2   },
+    "rvks": { "B": 5,   "C": 11,  "D": 26,  "F": 5,   "J": 2,   "M": 15,  "P": 3,   "S": 29,  "V": 3,   "O": 1   },
+    "sv":   { "B": 5.5, "C": 10,  "D": 24,  "F": 4.5, "J": 2.5, "M": 15,  "P": 3,   "S": 29,  "V": 4,   "O": 2.5 },
+    "nv":   { "B": 12,  "C": 5,   "D": 17,  "F": 6.5, "J": 3,   "M": 24,  "P": 1,   "S": 20,  "V": 7,   "O": 4.5 },
+    "na":   { "B": 11,  "C": 4.5, "D": 16,  "F": 5,   "J": 1,   "M": 18.5, "P": 3,   "S": 32,  "V": 6,   "O": 3   },
+    "s":    { "B": 13,  "C": 6,   "D": 23,  "F": 5,   "J": 2,   "M": 20,  "P": 2,   "S": 18,  "V": 5,   "O": 6   }
+  }
+}
