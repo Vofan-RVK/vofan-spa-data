@@ -86,21 +86,27 @@ File name: `YYYY-MM-DD-<pollster>.json` (date = publication date).
 ```json
 {
   "schema": 1,
-  "modelVersion": 2,
+  "modelVersion": 3,
   "lastUpdated": "2026-11-03",
+  "electionDate": "2028-11-30",
   "constituencies": { "rvkn": { "B": 5, "...": "..." } },
-  "uncertainty": { "sigmaNat": 2.0, "sigmaDist": 1.4 },
+  "uncertainty": { "sigmaNat": 4.85, "sigmaDist": 3.39 },
   "sources": [{ "pollster": "Gallup", "series": "Þjóðarpúlsinn", "published": "2026-11-03", "weight": 0.45 }]
 }
 ```
 
 `lastUpdated` is the publication date of the newest poll in the dataset,
 not the recompute date. `weight` in each source is the pollster's
-accuracy weight (see below).
+accuracy weight (see below). `electionDate` is the election the forecast
+targets (nominally 2028-11-30; set `VOFAN_ELECTION_DATE` in the repo
+environment for a snap election). The two sigmas scale with the time
+left to that date (see below): they are the honest band of
+"where will this land", not a confidence interval on the polls
+themselves.
 
-## Model v2
+## Model v3
 
-Four ingredients, in order:
+Five ingredients, in order:
 
 1. **Recency.** Exponential decay with a 45-day half-life, measured from
    the newest poll in the dataset.
@@ -120,6 +126,15 @@ Four ingredients, in order:
    deviation across those elections — shrunk to hedge against
    over-correction on a 3-election sample. **Re-estimate after each
    election.**
+5. **Time-to-election uncertainty (v3).** The published sigma grows as
+   the election is further away: sigma² = 12.76 + 0.0141 × days to
+   election, sigmaDist = 0.7 × sigmaNat. Calibrated from the 2017, 2021
+   and 2024 elections: every national poll on record was bucketed by its
+   horizon, bucket-averaged per party, and the average's error against
+   the actual result measured — pooled RMSE rises from ~3.4 points in
+   the final month to ~5.0 more than a year out. The band therefore
+   carries both polling error and genuine opinion change, which is what
+   the widget should express. **Re-fit after each election.**
 
 National polls are house-corrected on the flat national row first, then
 split across constituencies with the swing method against
@@ -131,10 +146,12 @@ next election.**
 
 Out-of-sample backtest (house effects re-estimated leaving each election
 out): mean absolute error 1.05 points per party across 2017/2021/2024,
-vs 1.38 for the unweighted v1 average. Still no trend/late-swing
-extrapolation and no time-to-election uncertainty scaling — those are
-the next steps. `polls/` is the source of truth, so model changes can
-always be re-run over the same data.
+vs 1.38 for the unweighted v1 average. Constituency polls may cover a
+subset of the six constituencies (regional media often publish only
+their own area); each constituency averages only over the polls that
+actually cover it. Still no trend/late-swing extrapolation — that is the
+next step. `polls/` is the source of truth, so model changes can always
+be re-run over the same data.
 
 ## Update workflow (how data actually gets here)
 
