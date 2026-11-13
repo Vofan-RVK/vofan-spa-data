@@ -6,6 +6,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: byggja-widget
+  cancel-in-progress: false
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,5 +27,6 @@ jobs:
             echo "widget.js óbreytt — ekkert til að gefa út"
           else
             git commit -m "Bæti uppfærðu widgeti"
+            git pull --rebase origin main
             git push
           fi
