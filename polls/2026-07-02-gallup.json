@@ -1,0 +1,24 @@
+{
+  "pollster": "Gallup",
+  "series": "Þjóðarpúlsinn",
+  "published": "2026-07-02",
+  "scope": "national",
+  "values": {
+    "B": 5.3,
+    "C": 11.4,
+    "D": 24.9,
+    "F": 4.6,
+    "J": 4.3,
+    "M": 15.1,
+    "P": 3.0,
+    "S": 26.2,
+    "V": 5.0,
+    "O": 0.2
+  },
+  "fieldwork": {
+    "start": "2026-06-01",
+    "end": "2026-06-30"
+  },
+  "note": "Gallup Þjóðarpúlsinn, júnímæling. Gildi: Gallup Puls_0626 og gallup.is-frétt 2. júlí 2026.",
+  "source": "https://www.gallup.is/nidurstodur/thjodarpuls/"
+}
