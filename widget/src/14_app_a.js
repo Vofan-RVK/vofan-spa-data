@@ -116,10 +116,9 @@ function mountFull(el, opts) {
     var coalition = st.coalition;
     var natTotals = st.natTotals, natShares = st.natShares;
 
-    /* haus: undirlína með dagsetningu kosninga og síðustu uppfærslu */
+    /* haus: aðeins „Uppfært“ — titillinn og kjördæmaártalið birtast í
+       síðutitli Ghost-síðunnar, ekki í widgetinu sjálfu */
     var subline = [];
-    var yr = st.data.electionDate ? String(st.data.electionDate).slice(0, 4) : "";
-    subline.push("Alþingiskosningar" + (yr ? " " + yr : ""));
     subline.push("Uppfært " + todayIsl());
 
     el.innerHTML = "";
@@ -133,11 +132,8 @@ function mountFull(el, opts) {
               boxShadow: "4px 4px 0 rgba(31,58,92,0.25)" } },
           /* haus */
           h("div", null,
-            h("h1", { class: "text-3xl font-bold" }, "Kosningaspá Vofunnar"),
-            subline.length > 0
-              ? h("div", { class: "mt-1 text-sm italic", style: { color: FAINT } },
-                  subline.join(" · "))
-              : null),
+            h("div", { class: "text-sm italic", style: { color: FAINT } },
+              subline.join(" · "))),
           h("div", { class: "mt-3" }, Rule()),
 
           /* kort + spá — í DOM-röð: aðalkort, höfuðborgarkort,
