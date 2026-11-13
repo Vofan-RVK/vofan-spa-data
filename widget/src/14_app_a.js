@@ -65,11 +65,145 @@ function mountFull(el, opts) {
   function pick(cid, src) {
     st.selected = cid;
     st.selSrc = src;
-    render();
+    /* aðeins kortahnitanetið uppfærist — engin heildaruppteiknun,
+       svo síðan ristist ekki (sama kerfi og í Meirihlutamyndun) */
+    updateSelection();
   }
   function clearSel() {
     st.selected = null;
-    render();
+    updateSelection();
+  }
+
+  /* KORTAHNITANET — teiknað út í eitt fall svo hægt sé að skipta
+     AÐEINS þessum hluta út þegar kjördæmi er valið (updateSelection),
+     ekki öllu viðmótinu — heildaruppteiknun ryður festipunkti vafrans og
+     það er það sem gerir það að verkum að widgetinn „ristist“ á farsíma */
+  function gridNode(sim, sel, selDr) {
+    var polls = st.polls;
+    var natTotals = st.natTotals, natShares = st.natShares;
+          /* kort + spá — í DOM-röð: aðalkort, höfuðborgarkort,
+             kjördæmareitir, Heildarspá. Á skjá setur hnitanetið kortin
+             hlið við hlið og reitina í vinstri tveimur dálkum;
+             á farsíma fellur allt í eina dálka í DOM-röð */
+          return h("div", { class: "grid gap-6 lg:grid-cols-3 vof-mapgrid",
+              style: { rowGap: 0, columnGap: 24 } },
+            h("div", { class: "lg:col-span-2",
+                style: { border: "1px solid " + INK, padding: 8,
+                  background: PAPER, position: "relative" } },
+              MainMap(sim, st.selected, function (cid) { pick(cid, "main"); }),
+              sel && st.selSrc === "main" ? popup(sel, selDr) : null),
+
+            /* höfuðborgarkort — á skjá efst í hægri spáltnni, en á
+               farsíma rétt fyrir neðan aðalkortið (vof-insetwrap);
+               sprettiglugginn birtist yfir því korti sem smellt var á */
+            h("div", { class: "vof-insetwrap", style: { position: "relative" } },
+              InsetMap(sim, st.selected, function (cid) { pick(cid, "inset"); }),
+              sel && st.selSrc === "inset" ? popup(sel, selDr) : null),
+
+            h("section", { class: "lg:col-span-2 flex flex-col" },
+              /* ÞINGMANNAPUNKTAR — reitirnir teygjast (flex-1) svo þetta
+                 svæði haldi alltaf sömu hæð og Heildarspá hægra megin;
+                 valið kjördæmi stækkar til vinstri og hin fimm liggja
+                 í fastan dálki hægra megin (vof-selrow/vof-selcol) */
+              h("h2", { class: "mt-6 mb-2 text-sm font-bold uppercase tracking-widest",
+                  style: { color: RUST } }, "Þingmenn eftir kjördæmum"),
+              sel
+                ? h("div", { class: "flex-1 vof-selrow" },
+                    h("div", { class: "vof-selmain" },
+                      /* útfellt spildi: aðeins titill og þáttatafla —
+                         punktaröð valins kjördæmis er á kortasprettiglugganum
+                         og sætataölurnar í töflunni, svo spildið passi í
+                         sömu hæð og óútfaestir reitir og þingmannaspáinn
+                         hreyfist ekki */
+                      h("div", { class: "p-2 h-full flex flex-col",
+                          style: { border: "1px solid " + INK } },
+                        h("div", { class: "flex items-baseline justify-between" },
+                          h("span", { class: "text-sm font-bold whitespace-nowrap" },
+                            sel.short || sel.name),
+                          h("span", { class: "flex items-baseline" },
+                            h("span", { class: "text-xs italic whitespace-nowrap",
+                                style: { color: FAINT } },
+                              sel.seats + "+" + (sel.total - sel.seats) + " sæti"),
+                            h("button", { "aria-label": "Loka", on: { click: clearSel },
+                                style: { border: "none", background: "none",
+                                  cursor: "pointer", color: INK, fontSize: 15,
+                                  lineHeight: 1, marginLeft: 8 } }, "✕"))),
+                        h("div", { class: "mt-2 flex-1" },
+                          ConstitTable(sel, polls, selDr.alloc, selDr.eq)))),
+                    h("div", { class: "vof-selcol" },
+                      sim.constituencies
+                        .filter(function (c) { return c.id !== st.selected; })
+                        .map(function (c) {
+                          var dr = st.drawFor(c);
+                          return SeatDots({
+                            tiny: true,
+                            onSelect: function () { pick(c.id, "main"); },
+                            title: c.short || c.name,
+                            subtitle: c.seats + "+" + (c.total - c.seats) + " sæti",
+                            allocation: dr.alloc, eq: dr.eq,
+                            pollOrder: polls[c.id] });
+                        })))
+                : h("div", { class: "flex-1 grid gap-3 sm:grid-cols-2",
+                    style: { gridAutoRows: "minmax(0, 1fr)" } },
+                    sim.constituencies.map(function (c) {
+                      var dr = st.drawFor(c);
+                      return SeatDots({
+                        onSelect: function () { pick(c.id, "main"); },
+                        title: c.short || c.name,
+                        subtitle: c.seats + "+" + (c.total - c.seats) + " sæti",
+                        allocation: dr.alloc, eq: dr.eq,
+                        pollOrder: polls[c.id] });
+                    }))),
+
+            /* Heildarspá — á skjá neðst í hægri spáltnni, en á farsíma
+               á eftir kjördæmareitunum. Vafinn er flex-dálkur og ramminn
+               flex-1 svo hann nái alltaf sömu hæð og reitirnir til vinstri */
+            h("div", { class: "mt-6 flex flex-col" },
+              h("h2", { class: "text-sm font-bold uppercase tracking-widest",
+                  style: { color: RUST } }, "Heildarspá"),
+              h("div", { class: "mt-2 flex-1",
+                  style: { border: "1px solid " + INK, background: PAPER,
+                    padding: 12 } },
+                sim.national
+                  .map(function (r, i) { return { r: r, i: i }; })
+                  .sort(function (a, b) {
+                    if (a.i === NO_SEAT) return 1;
+                    if (b.i === NO_SEAT) return -1;
+                    return natShares[b.i] - natShares[a.i];
+                  })
+                  .map(function (o) {
+                    var r = o.r, i = o.i;
+                    return h("div", { class: "flex items-center py-1 text-sm",
+                        style: { borderBottom: "1px dotted " + FAINT } },
+                      h("span", { class: "font-semibold flex-1" },
+                        h("span", { class: "mr-1.5 inline-block align-middle",
+                            style: { width: 9, height: 9, borderRadius: "50%",
+                              background: PARTY_COLORS[i],
+                              boxShadow: "1px 1px 0 " + SHADOW } }),
+                        r.name),
+                      h("span", { class: "tabular-nums",
+                          style: { width: 64, textAlign: "left" } }, pct(natShares[i])),
+                      h("span", { class: "font-bold tabular-nums",
+                          style: { width: 56, textAlign: "right" } },
+                        i === NO_SEAT ? "—" : natTotals[i] + " þm"));
+                  }))));
+
+  }
+
+  /* VAL KJÖRDÆMIS ÁN RISAR: smellur á kortaflöt (eða ✕-hnappurinn í
+     útfelda spjaldinu) skiptir AÐEINS út kortahnitanetinu (vof-mapgrid)
+     — haus, þingmannaspá og flokkar halda sér stað, svo vafrinn missir
+     aldrei festipunkt og widgetinn hreyfist ekki (farsímaprápið) */
+  function updateSelection() {
+    if (!st.data || !st.natTotals) return;
+    var host = findByClass(el, "vof-mapgrid");
+    if (!host) { render(); return; } /* óvænt form — varasvörun */
+    var sim = st.sim;
+    var sel = st.selected
+      ? sim.constituencies.find(function (c) { return c.id === st.selected; })
+      : null;
+    var selDr = sel ? st.drawFor(sel) : null;
+    host.parentNode.replaceChild(gridNode(sim, sel, selDr), host);
   }
 
   /* MEIRIHLUTAMYNDUN ÁN RISAR: smellur á flokkahnappa eða boga punkta
@@ -185,112 +319,8 @@ function mountFull(el, opts) {
             h("span", { class: "text-sm italic", style: { color: FAINT } },
               subline.join(" · "))),
 
-          /* kort + spá — í DOM-röð: aðalkort, höfuðborgarkort,
-             kjördæmareitir, Heildarspá. Á skjá setur hnitanetið kortin
-             hlið við hlið og reitina í vinstri tveimur dálkum;
-             á farsíma fellur allt í eina dálka í DOM-röð */
-          h("div", { class: "grid gap-6 lg:grid-cols-3",
-              style: { rowGap: 0, columnGap: 24 } },
-            h("div", { class: "lg:col-span-2",
-                style: { border: "1px solid " + INK, padding: 8,
-                  background: PAPER, position: "relative" } },
-              MainMap(sim, st.selected, function (cid) { pick(cid, "main"); }),
-              sel && st.selSrc === "main" ? popup(sel, selDr) : null),
+          gridNode(sim, sel, selDr),
 
-            /* höfuðborgarkort — á skjá efst í hægri spáltnni, en á
-               farsíma rétt fyrir neðan aðalkortið (vof-insetwrap);
-               sprettiglugginn birtist yfir því korti sem smellt var á */
-            h("div", { class: "vof-insetwrap", style: { position: "relative" } },
-              InsetMap(sim, st.selected, function (cid) { pick(cid, "inset"); }),
-              sel && st.selSrc === "inset" ? popup(sel, selDr) : null),
-
-            h("section", { class: "lg:col-span-2 flex flex-col" },
-              /* ÞINGMANNAPUNKTAR — reitirnir teygjast (flex-1) svo þetta
-                 svæði haldi alltaf sömu hæð og Heildarspá hægra megin;
-                 valið kjördæmi stækkar til vinstri og hin fimm liggja
-                 í fastan dálki hægra megin (vof-selrow/vof-selcol) */
-              h("h2", { class: "mt-6 mb-2 text-sm font-bold uppercase tracking-widest",
-                  style: { color: RUST } }, "Þingmenn eftir kjördæmum"),
-              sel
-                ? h("div", { class: "flex-1 vof-selrow" },
-                    h("div", { class: "vof-selmain" },
-                      /* útfellt spildi: aðeins titill og þáttatafla —
-                         punktaröð valins kjördæmis er á kortasprettiglugganum
-                         og sætataölurnar í töflunni, svo spildið passi í
-                         sömu hæð og óútfaestir reitir og þingmannaspáinn
-                         hreyfist ekki */
-                      h("div", { class: "p-2 h-full flex flex-col",
-                          style: { border: "1px solid " + INK } },
-                        h("div", { class: "flex items-baseline justify-between" },
-                          h("span", { class: "text-sm font-bold whitespace-nowrap" },
-                            sel.short || sel.name),
-                          h("span", { class: "flex items-baseline" },
-                            h("span", { class: "text-xs italic whitespace-nowrap",
-                                style: { color: FAINT } },
-                              sel.seats + "+" + (sel.total - sel.seats) + " sæti"),
-                            h("button", { "aria-label": "Loka", on: { click: clearSel },
-                                style: { border: "none", background: "none",
-                                  cursor: "pointer", color: INK, fontSize: 15,
-                                  lineHeight: 1, marginLeft: 8 } }, "✕"))),
-                        h("div", { class: "mt-2 flex-1" },
-                          ConstitTable(sel, polls, selDr.alloc, selDr.eq)))),
-                    h("div", { class: "vof-selcol" },
-                      sim.constituencies
-                        .filter(function (c) { return c.id !== st.selected; })
-                        .map(function (c) {
-                          var dr = st.drawFor(c);
-                          return SeatDots({
-                            tiny: true,
-                            onSelect: function () { pick(c.id, "main"); },
-                            title: c.short || c.name,
-                            subtitle: c.seats + "+" + (c.total - c.seats) + " sæti",
-                            allocation: dr.alloc, eq: dr.eq,
-                            pollOrder: polls[c.id] });
-                        })))
-                : h("div", { class: "flex-1 grid gap-3 sm:grid-cols-2",
-                    style: { gridAutoRows: "minmax(0, 1fr)" } },
-                    sim.constituencies.map(function (c) {
-                      var dr = st.drawFor(c);
-                      return SeatDots({
-                        onSelect: function () { pick(c.id, "main"); },
-                        title: c.short || c.name,
-                        subtitle: c.seats + "+" + (c.total - c.seats) + " sæti",
-                        allocation: dr.alloc, eq: dr.eq,
-                        pollOrder: polls[c.id] });
-                    }))),
-
-            /* Heildarspá — á skjá neðst í hægri spáltnni, en á farsíma
-               á eftir kjördæmareitunum. Vafinn er flex-dálkur og ramminn
-               flex-1 svo hann nái alltaf sömu hæð og reitirnir til vinstri */
-            h("div", { class: "mt-6 flex flex-col" },
-              h("h2", { class: "text-sm font-bold uppercase tracking-widest",
-                  style: { color: RUST } }, "Heildarspá"),
-              h("div", { class: "mt-2 flex-1",
-                  style: { border: "1px solid " + INK, background: PAPER,
-                    padding: 12 } },
-                sim.national
-                  .map(function (r, i) { return { r: r, i: i }; })
-                  .sort(function (a, b) {
-                    if (a.i === NO_SEAT) return 1;
-                    if (b.i === NO_SEAT) return -1;
-                    return natShares[b.i] - natShares[a.i];
-                  })
-                  .map(function (o) {
-                    var r = o.r, i = o.i;
-                    return h("div", { class: "flex items-center py-1 text-sm",
-                        style: { borderBottom: "1px dotted " + FAINT } },
-                      h("span", { class: "font-semibold flex-1" },
-                        h("span", { class: "mr-1.5 inline-block align-middle",
-                            style: { width: 9, height: 9, borderRadius: "50%",
-                              background: PARTY_COLORS[i],
-                              boxShadow: "1px 1px 0 " + SHADOW } }),
-                        r.name),
-                      h("span", { class: "tabular-nums",
-                          style: { width: 64, textAlign: "left" } }, pct(natShares[i])),
-                      h("span", { class: "font-bold tabular-nums",
-                          style: { width: 56, textAlign: "right" } },
-                        i === NO_SEAT ? "—" : natTotals[i] + " þm"));
-                  })))),
 
           /* ÞINGMANNASPÁ — alls 63 þingmenn í hálfhring, allur breiddar
              innskýtar */
