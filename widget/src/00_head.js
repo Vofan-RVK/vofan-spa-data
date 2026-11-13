@@ -1,5 +1,5 @@
 /* ============================================================
-   Kosningaspá Vofunnar — widget fyrir vofan.org
+   Spálíkan Vofunnar — widget fyrir vofan.org
    Risógraf-stíll, engar utanaðkomandi kerfishöfn.
    Gögn: vofan-spa-data (Vofan-RVK), forecast.json.
    Kjördæmamörk byggð á lögum um kosningar til Alþingis
