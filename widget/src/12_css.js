@@ -1,9 +1,16 @@
 
 /* ---------- stíll ---------- */
 var CSS = `
-.vof { font-family: Georgia, "Times New Roman", serif; color: #1F3A5C;
-  background: #F2ECDD; font-size: 16px; line-height: 1.5;
+.vof {
+  --vof-paper: #F2ECDD; --vof-ink: #1F3A5C; --vof-rust: #D2542F;
+  --vof-faint: #8FA3BC; --vof-shadow: rgba(31,58,92,0.3);
+  font-family: Georgia, "Times New Roman", serif; color: var(--vof-ink);
+  background: var(--vof-paper); font-size: 16px; line-height: 1.5;
   container: vof / inline-size; }
+/* næturútgáfan tekur sjálfkrafa við þegar vofan.org er í myrku ham */
+:root.dark .vof {
+  --vof-paper: #141D2B; --vof-ink: #F2ECDD; --vof-rust: #E0653F;
+  --vof-faint: #8FA3BC; --vof-shadow: rgba(0,0,0,0.45); }
 .vof, .vof *, .vof *::before, .vof *::after { box-sizing: border-box; }
 .vof * { margin: 0; padding: 0; border: 0 solid; }
 .vof svg { display: block; vertical-align: middle; }
@@ -100,14 +107,14 @@ var CSS = `
 /* .vof.vofc-card — samsett vísandi vegna .vof a { color: inherit }
    sem annars yrði sérstakara og yfirskyggi litinn */
 .vof.vofc-card { display: block; text-decoration: none;
-  color: #1F3A5C; margin: 40px 0 0;
-  border: 3px double #1F3A5C; background: #F2ECDD;
-  padding: 12px 14px; box-shadow: 4px 4px 0 rgba(31,58,92,0.25);
+  color: var(--vof-ink); margin: 40px 0 0;
+  border: 3px double var(--vof-ink); background: var(--vof-paper);
+  padding: 12px 14px; box-shadow: 4px 4px 0 var(--vof-shadow);
   transition: transform 0.1s ease, box-shadow 0.1s ease; }
 .vofc-card:active, .vofc-card:focus, .vofc-card:hover,
 .vofc-card * { text-decoration: none; }
 .vofc-card:hover { transform: translate(-1px, -1px);
-  box-shadow: 5px 5px 0 rgba(31,58,92,0.3); }
+  box-shadow: 5px 5px 0 var(--vof-shadow); }
 .vofc-title { font-size: 16px; font-weight: 700; }
 .vofc-rule { margin-top: 6px; }
 .vofc-strip { display: flex; flex-wrap: nowrap; gap: 4px 14px;
@@ -120,11 +127,11 @@ var CSS = `
 .vofc-item { white-space: nowrap; display: inline-flex;
   align-items: center; gap: 5px; }
 .vofc-dot { width: 9px; height: 9px; border-radius: 50%;
-  display: inline-block; box-shadow: 1px 1px 0 rgba(31,58,92,0.3); }
+  display: inline-block; box-shadow: 1px 1px 0 var(--vof-shadow); }
 .vofc-foot { display: flex; justify-content: space-between;
   align-items: baseline; margin-top: 10px; font-size: 12px; font-style: italic; }
-.vofc-more { font-style: normal; font-weight: 700; color: #D2542F; }
-.vofc-err { border: 3px double #1F3A5C; background: #F2ECDD;
+.vofc-more { font-style: normal; font-weight: 700; color: var(--vof-rust); }
+.vofc-err { border: 3px double var(--vof-ink); background: var(--vof-paper);
   padding: 12px 14px; font-size: 13px; }
 `;
 var CSS_INJECTED = false;
