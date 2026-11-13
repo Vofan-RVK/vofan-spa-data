@@ -576,15 +576,15 @@ var CSS = `
    ljós textalitur sem myndi hverfa á pappír spjaldsins */
 /* .vof.vofc-card — samsett vísandi vegna .vof a { color: inherit }
    sem annars yrði sérstakara og yfirskyggi litinn */
+/* ENGIN hreyfing við bendil (óskið 13. nóv. 2026): hvorki translate né
+   skuggabreyting — spjaldið stendur alveg kyrrt; aðeins er slökkt á
+   undirstrikun svo texti fari ekki að skrota við höfnina */
 .vof.vofc-card { display: block; text-decoration: none;
   color: var(--vof-ink); margin: 40px 0 0;
   border: 3px double var(--vof-ink); background: var(--vof-paper);
-  padding: 12px 14px; box-shadow: 4px 4px 0 var(--vof-shadow);
-  transition: transform 0.1s ease, box-shadow 0.1s ease; }
+  padding: 12px 14px; box-shadow: 4px 4px 0 var(--vof-shadow); }
 .vofc-card:active, .vofc-card:focus, .vofc-card:hover,
 .vofc-card * { text-decoration: none; }
-.vofc-card:hover { transform: translate(-1px, -1px);
-  box-shadow: 5px 5px 0 var(--vof-shadow); }
 .vofc-title { font-size: 16px; font-weight: 700; }
 .vofc-rule { margin-top: 6px; }
 .vofc-strip { display: flex; flex-wrap: nowrap; gap: 4px 14px;
@@ -1018,12 +1018,19 @@ function mountFull(el, opts) {
       var order = PARTIES.map(function (_, i) { return i; })
         .filter(function (i) { return i !== NO_SEAT && st.natTotals[i] > 0; })
         .sort(function (a, b) { return st.natShares[b] - st.natShares[a] || a - b; });
-      (btnrow.children || []).forEach(function (b, jx) {
-        var i = order[jx];
-        if (i === undefined) return;
-        applyStyle(b, flokBtnStyle(i, st.coalition.has(i)));
-        b.setAttribute("aria-pressed", st.coalition.has(i) ? "true" : "false");
-      });
+      /* VAFRAVIÐVÖRUN: .children er HTMLCollection í alvöru vafra og hefur
+         ENGINN fylkjaaðferðir (forEach o.s.frv.) — þess vegna klassísk
+         lykkja. Fallbackið „|| []“ dugar ekki: HTMLCollection er satt en
+         forEach vantar. (.forEach hér var djúpstæð villa í v3.9: kastar
+         villu í vafranum svo samtalan birtist aldrei, en virkar í
+         Node-stubbnum þar sem children er venjulegt fylki.) */
+      var btns = btnrow.children;
+      for (var jx = 0; jx < btns.length; jx++) {
+        var bi = order[jx];
+        if (bi === undefined) continue;
+        applyStyle(btns[jx], flokBtnStyle(bi, st.coalition.has(bi)));
+        btns[jx].setAttribute("aria-pressed", st.coalition.has(bi) ? "true" : "false");
+      }
     }
     var sum = findByClass(box, "vof-sum");
     if (sum && sum.parentNode) {
