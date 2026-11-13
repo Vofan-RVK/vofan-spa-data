@@ -1,0 +1,38 @@
+{
+  "pollster": "Gallup",
+  "series": "Þjóðarpúlsinn",
+  "published": "2026-07-03",
+  "fieldwork": {
+    "start": "2026-06-01",
+    "end": "2026-06-30"
+  },
+  "scope": "constituency",
+  "values": {
+    "s": {
+      "B": 7.7,
+      "C": 6.9,
+      "D": 30.5,
+      "F": 7.2,
+      "J": 2.1,
+      "M": 21.6,
+      "P": 2.1,
+      "S": 18.4,
+      "V": 3.3,
+      "O": 0.2
+    },
+    "na": {
+      "B": 12.2,
+      "C": 4.8,
+      "D": 14.7,
+      "F": 6.6,
+      "J": 3.0,
+      "M": 20.8,
+      "P": 2.4,
+      "S": 26.0,
+      "V": 9.4,
+      "O": 0.1
+    }
+  },
+  "note": "Kjördæmatölur úr júnípúls (fylgiregin RÚV-samstarfsmiðla). Suðurkjördæmi: Víkurfréttir (vf.is, birt 3. júlí 2026); O = 100 − útgefin tölur = 0,2. Norðausturkjördæmi: Austurfrétt (birt 15. júlí 2026, n=432); O = 0,1 sem útreiknað afgangur.",
+  "source": "https://www.vf.is/frettir/sjalfstaedisflokkurinn-staerstur-i-sudurkjordaemi-3 , https://austurfrett.is/frettir/litlar-breytingar-a-fylgi-i-nordhausturkjoerdaemi"
+}
