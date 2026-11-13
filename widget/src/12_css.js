@@ -97,7 +97,9 @@ var CSS = `
 /* spjaldið er pappírsgeypti: eigin blekslitur (#1F3A5C), ekki
    erfður frá gestgjafarsíðunni — í dökku þema síðunnar erfðist
    ljós textalitur sem myndi hverfa á pappír spjaldsins */
-.vofc-card { display: block; text-decoration: none;
+/* .vof.vofc-card — samsett vísandi vegna .vof a { color: inherit }
+   sem annars yrði sérstakara og yfirskyggi litinn */
+.vof.vofc-card { display: block; text-decoration: none;
   color: #1F3A5C; margin: 40px 0 0;
   border: 3px double #1F3A5C; background: #F2ECDD;
   padding: 12px 14px; box-shadow: 4px 4px 0 rgba(31,58,92,0.25);
