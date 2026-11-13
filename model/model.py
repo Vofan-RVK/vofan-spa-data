@@ -34,6 +34,7 @@ SIGMA_NAT = 2.0
 SIGMA_DIST = 1.4
 SUM_TOLERANCE = 1.5  # constituency values must sum to 100 +- this
 
+
 def load_polls():
     files = sorted(POLLS_DIR.glob("*.json"))
     if not files:
@@ -44,6 +45,7 @@ def load_polls():
         p["_file"] = f.name
         polls.append(p)
     return polls
+
 
 def validate(polls):
     for p in polls:
@@ -72,6 +74,7 @@ def validate(polls):
                 sys.exit(f"ERROR: {p['_file']} / {c} sums to {total:.1f}, "
                          f"expected 100 +- {SUM_TOLERANCE}")
 
+
 def model_v1(polls):
     """Recency-weighted average per constituency, per party."""
     ref = max(dt.date.fromisoformat(p["published"]) for p in polls)
@@ -88,6 +91,7 @@ def model_v1(polls):
     for c in CONSTITUENCIES:
         out[c] = {b: round(sums[c][b] / wsums[c], 2) for b in PARTIES}
     return out, ref
+
 
 def main():
     polls = load_polls()
@@ -126,6 +130,7 @@ def main():
         row = constituencies[c]
         print(f"{c:<9} " + "  ".join(f"{row[b]:>5.1f}" for b in PARTIES))
     print(f"\nWrote {OUT_PATH.relative_to(ROOT)}")
+
 
 if __name__ == "__main__":
     main()
