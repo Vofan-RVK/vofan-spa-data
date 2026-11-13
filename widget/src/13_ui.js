@@ -8,18 +8,33 @@ function setAttrs(el, attrs) {
     var v = attrs[k];
     if (v == null) continue;
     if (k === "class") el.setAttribute("class", v);
-    else if (k === "style") {
-      if (typeof v === "string") el.style.cssText = v;
-      else for (var s in v) {
-        var val = v[s];
-        /* tölur fá "px", eins og React gerir (width: 9 -> "9px") */
-        if (typeof val === "number") val = val + "px";
-        el.style[s] = val;
-      }
-    } else if (k === "on") {
+    else if (k === "style") applyStyle(el, v);
+    else if (k === "on") {
       for (var e in v) el.addEventListener(e, v[e]);
     } else el.setAttribute(k, String(v));
   }
+}
+/* stílgildi á hnút — tölur fá "px", eins og React gerir (width: 9 -> "9px");
+   sér fall svo hægt sé að endurnýja stíl tiltekinna hnúta án þess að
+   teikna allt viðmótið upp aftur */
+function applyStyle(el, v) {
+  if (typeof v === "string") { el.style.cssText = v; return; }
+  for (var s in v) {
+    var val = v[s];
+    if (typeof val === "number") val = val + "px";
+    el.style[s] = val;
+  }
+}
+/* finnur fyrsta hnút með klasaorðið — notað til að uppfæra einstaka
+   hluti viðmótsins án heildaruppteikningar */
+function findByClass(root, cls) {
+  if (root && String(root.className || "").split(" ").indexOf(cls) >= 0) return root;
+  var kids = (root && root.children) || [];
+  for (var i = 0; i < kids.length; i++) {
+    var hit = findByClass(kids[i], cls);
+    if (hit) return hit;
+  }
+  return null;
 }
 function addKid(el, c) {
   if (c == null || c === false) return;
@@ -106,7 +121,10 @@ function InsetMap(sim, selected, onSelect) {
   }
   return h("div", { style: { border: "1px solid " + INK, padding: 8, background: PAPER } },
     hs("svg", { viewBox: "0 0 " + I.W + " " + I.H,
-        "preserveAspectRatio": "xMidYMin meet", class: "vof-mapsvg",
+        /* YMid: teikningin skalar eftir breidd og lóðrétta tómrúminu
+           skiptist þá jafnt ofan og neðan — áður lá kortið uppi í
+           ramma með miklu tómu rúmi fyrir neðan */
+        "preserveAspectRatio": "xMidYMid meet", class: "vof-mapsvg",
         style: { width: "100%", height: MAP_H } },
       hs("rect", { x: 0, y: 0, width: I.W, height: I.H, fill: TINT }),
       I.ctx.map(function (m) {
@@ -144,14 +162,10 @@ function SeatDots(o) {
     ? { w: 10, f: 0, shadow: "1px 1px 0 " + SHADOW, gap: 2 }
     : o.bare
     ? { w: 13, f: 8, shadow: "1px 1px 0 " + SHADOW, gap: 4 }
-    : { w: 18, f: 10, shadow: "2px 2px 0 " + SHADOW, gap: 4 };
-  /* Suðvesturkjördæmi (12+2 = 14 punktar) flæði út reitnum á
-     1080 px pappírsbreidd vofan.org — stór safn fá heldur minni
-     punkta svo röðin verði alltaf ein (línuþrá í laginu fyrir
-     pappírsbreiddina sem breyktist úr 1152 í 1080 px) */
-  if (!o.tiny && !o.bare && dist.length + eqs.length > 11) {
-    ds = { w: 15, f: 8, shadow: "2px 2px 0 " + SHADOW, gap: 3 };
-  }
+    : { w: 15, f: 8, shadow: "2px 2px 0 " + SHADOW, gap: 3 };
+  /* allar kjördæmareitir nota sömu punktastærð (15 px) svo röðin
+     ljóki jafnt og punktaröðunum verði raðað yfir reitina — áður
+     fékk Suðvestur (14 punktar) minni punkta en hin (18 px) */
   function dot(d) {
     return h("span", {
       title: (d.j ? "Jöfnunarsæti: " : "") + d.name,
