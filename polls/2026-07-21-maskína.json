@@ -1,0 +1,25 @@
+{
+  "pollster": "Maskína",
+  "series": "Fylgi flokka á Alþingi",
+  "published": "2026-07-21",
+  "scope": "national",
+  "values": {
+    "B": 6.6,
+    "C": 12.7,
+    "D": 25.0,
+    "F": 5.9,
+    "J": 4.0,
+    "M": 13.4,
+    "P": 3.1,
+    "S": 24.4,
+    "V": 4.9,
+    "O": 0.0
+  },
+  "fieldwork": {
+    "start": "2026-06-26",
+    "end": "2026-07-08"
+  },
+  "sample": 963,
+  "note": "Maskínukönnun um fylgi flokka á Alþingi, júlí; 963 svarendur. Birt 21. júlí 2026 (Vísir/Sýn; 'Sjálfstæðisflokkur mælist stærstur í fyrsta sinn').",
+  "source": "https://www.visir.is/g/20262912056d/sjalf-staedis-flokkur-maelist-staerstur-i-fyrsta-sinn-fra-kosningum"
+}
