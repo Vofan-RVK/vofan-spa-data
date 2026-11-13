@@ -18,12 +18,16 @@ function showTip(text, x, y) {
   if (!tipEl) {
     tipEl = document.createElement("div");
     tipEl.setAttribute("style",
-      "position:fixed;background:" + PAPER + ";border:1px solid " + INK +
-      ";box-shadow:3px 3px 0 rgba(31,58,92,0.25);padding:3px 8px;" +
-      "font-size:12px;font-family:Georgia,'Times New Roman',serif;color:" + INK +
+      "position:fixed;border:1px solid;padding:3px 8px;" +
+      "font-size:12px;font-family:Georgia,'Times New Roman',serif" +
       ";white-space:nowrap;pointer-events:none;z-index:50;");
     document.body.appendChild(tipEl);
   }
+  /* litir endurnýjast í hvert skipti — bendillinn er í skyndiminni */
+  tipEl.style.background = PAPER;
+  tipEl.style.borderColor = INK;
+  tipEl.style.color = INK;
+  tipEl.style.boxShadow = "3px 3px 0 " + SHADOW;
   tipEl.style.left = x + "px";
   tipEl.style.top = (y - 12) + "px";
   tipEl.style.transform = "translate(-50%, -100%)";
@@ -91,7 +95,7 @@ function mountFull(el, opts) {
         style: {
           position: "absolute", top: 10, right: 10, maxWidth: 300,
           background: PAPER, border: "1px solid " + INK,
-          boxShadow: "4px 4px 0 rgba(31,58,92,0.25)", padding: 12,
+          boxShadow: "4px 4px 0 " + SHADOW, padding: 12,
         } },
       h("div", { class: "flex items-baseline justify-between" },
         h("span", { class: "text-2xl font-bold", style: { color: RUST } }, sel.abbr),
@@ -107,6 +111,7 @@ function mountFull(el, opts) {
   }
 
   function render() {
+    applySiteTheme();
     var sim = st.sim;
     var sel = st.selected
       ? sim.constituencies.find(function (c) { return c.id === st.selected; })
@@ -129,7 +134,7 @@ function mountFull(el, opts) {
           on: { click: hideTip } },
         h("div", { class: "relative mx-auto max-w-6xl",
             style: { border: "3px double " + INK, padding: "1.5rem",
-              boxShadow: "4px 4px 0 rgba(31,58,92,0.25)" } },
+              boxShadow: "4px 4px 0 " + SHADOW } },
           /* haus */
           h("div", null,
             h("div", { class: "text-sm italic", style: { color: FAINT } },
@@ -234,7 +239,7 @@ function mountFull(el, opts) {
                         h("span", { class: "mr-1.5 inline-block align-middle",
                             style: { width: 9, height: 9, borderRadius: "50%",
                               background: PARTY_COLORS[i],
-                              boxShadow: "1px 1px 0 rgba(31,58,92,0.3)" } }),
+                              boxShadow: "1px 1px 0 " + SHADOW } }),
                         r.name),
                       h("span", { class: "tabular-nums",
                           style: { width: 64, textAlign: "left" } }, pct(natShares[i])),
