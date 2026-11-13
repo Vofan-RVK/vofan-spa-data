@@ -1,0 +1,38 @@
+{
+  "pollster": "Gallup",
+  "series": "Þjóðarpúlsinn",
+  "published": "2026-09-30",
+  "fieldwork": {
+    "start": "2026-09-01",
+    "end": "2026-09-28"
+  },
+  "scope": "constituency",
+  "values": {
+    "s": {
+      "B": 8.2,
+      "C": 5.5,
+      "D": 31.2,
+      "F": 7.0,
+      "J": 1.2,
+      "M": 24.7,
+      "P": 1.0,
+      "S": 17.9,
+      "V": 2.8,
+      "O": 0.6
+    },
+    "na": {
+      "B": 11.2,
+      "C": 4.4,
+      "D": 15.8,
+      "F": 5.5,
+      "J": 0.8,
+      "M": 18.8,
+      "P": 2.9,
+      "S": 34.6,
+      "V": 5.9,
+      "O": 0.1
+    }
+  },
+  "note": "Kjördæmatölur úr septemberpúls (fylgiregin RÚV-samstarfsmiðla). Suðurkjördæmi: Víkurfréttir (vf.is, birt 30. september 2026, n=505); Sunnlenska greindi frá D = 31,1 (munar í námundun). Norðausturkjördæmi: Austurfrétt (birt 22. október 2026, n=361); O = 0,1 sem útreiknað afgangur.",
+  "source": "https://www.vf.is/frettir/sjalfstaedisflokkur-og-midflokkur-med-sterkasta-stodu-i-sudurkjordaemi , https://austurfrett.is/frettir/risastoekk-samfylkingarinnar-a-milli-manadha"
+}
