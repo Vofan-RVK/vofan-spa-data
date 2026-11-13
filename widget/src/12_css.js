@@ -98,6 +98,12 @@ var CSS = `
 }
 @container vof (max-width: 1023px) {
   .vof .vof-mapsvg { height: auto !important; }
+  /* Heildarspá á þröngum skjá: bókstafirnir einu stærð minni og
+     talnadálkarnir þrýstir þéttari, svo löng flokksheiti
+     (Sjálfstæðisflokkur, Framsóknarflokkur) haldi sér á eina línu */
+  .vof .vof-heildrow { font-size: 12px; }
+  .vof .vof-heildpct { width: 50px !important; }
+  .vof .vof-heildthm { width: 44px !important; }
   .vof .vof-ctable { height: auto !important; }
   .vof .vof-ctable td { padding-top: 3px; padding-bottom: 3px; }
   .vof .vof-tiny { padding: 8px !important; }
