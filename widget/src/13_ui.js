@@ -67,7 +67,10 @@ function MainMap(sim, selected, onSelect) {
   sim.constituencies.forEach(function (c) { byId[c.id] = c; });
   function tint(cid) {
     var i = leaderOf(byId[cid]);
-    return mixHex(PARTY_COLORS[i], PAPER, selected === cid ? 0.75 : 0.55);
+    /* útvölduð kjördæmi fá næstum fullan flokkslit (0.95) — 0.75-blandan
+       var of föl fyrir ljósa flokksliti (D varð gráblátt, S fölbleikt)
+       og liturinn varð óljós á farsímaskjá */
+    return mixHex(PARTY_COLORS[i], PAPER, selected === cid ? 0.95 : 0.55);
   }
   function fills(cid) {
     return (O[cid] || []).map(function (d) {
@@ -92,7 +95,10 @@ function MainMap(sim, selected, onSelect) {
     fills("nv"), fills("na"), fills("s"), fills("sv"), fills("rvkn"), fills("rvks"),
     edge("nv", INK, 8), edge("na", INK, 8), edge("s", INK, 8), edge("sv", INK, 8),
     edge("rvk", INK, 8), edge("rvkn", INK, 8), edge("rvks", INK, 8),
-    selected ? edge(selected, RUST, 14) : null
+    /* rísbringur útvalsins: nún 9 (áður 14) — á farsíma gleypa
+       þykkar línur litla höfuðborgarsvæðið svo allt hafði sér
+       eitt af tveimur rauðum tónum á höfuð- og aukakorti */
+    selected ? edge(selected, RUST, 9) : null
   );
 }
 
@@ -103,7 +109,10 @@ function InsetMap(sim, selected, onSelect) {
   sim.constituencies.forEach(function (c) { byId[c.id] = c; });
   function tint(cid) {
     var i = leaderOf(byId[cid]);
-    return mixHex(PARTY_COLORS[i], PAPER, selected === cid ? 0.75 : 0.55);
+    /* útvölduð kjördæmi fá næstum fullan flokkslit (0.95) — 0.75-blandan
+       var of föl fyrir ljósa flokksliti (D varð gráblátt, S fölbleikt)
+       og liturinn varð óljós á farsímaskjá */
+    return mixHex(PARTY_COLORS[i], PAPER, selected === cid ? 0.95 : 0.55);
   }
   var NEI = mixHex("#9AA5B1", PAPER, 0.28);
   function fills(cid) {
