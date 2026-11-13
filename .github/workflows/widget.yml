@@ -1,0 +1,28 @@
+name: Byggja widget
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/widget.yml", "widget/src/**"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Safna widget.js
+        run: cat widget/src/* > public/widget.js
+      - name: Athuga málskipan
+        run: node --check public/widget.js
+      - name: Gefa út widget.js
+        run: |
+          git config user.name "Vofan"
+          git config user.email "Vofan@users.noreply.github.com"
+          git add public/widget.js
+          if git diff --cached --quiet; then
+            echo "widget.js óbreytt — ekkert til að gefa út"
+          else
+            git commit -m "Bæti uppfærðu widgeti"
+            git push
+          fi
