@@ -1,0 +1,24 @@
+{
+  "pollster": "Gallup",
+  "series": "Þjóðarpúlsinn",
+  "published": "2026-05-02",
+  "scope": "national",
+  "values": {
+    "B": 5.4,
+    "C": 10.6,
+    "D": 21.4,
+    "F": 5.2,
+    "J": 2.0,
+    "M": 18.9,
+    "P": 2.0,
+    "S": 28.5,
+    "V": 5.1,
+    "O": 0.9
+  },
+  "fieldwork": {
+    "start": "2026-04-01",
+    "end": "2026-04-29"
+  },
+  "note": "Gallup Þjóðarpúlsinn, aprílmæling. Gildi: Gallup Puls_0426 og Eyjafréttir/RÚV 2. maí 2026.",
+  "source": "https://www.gallup.is/nidurstodur/thjodarpuls/"
+}
