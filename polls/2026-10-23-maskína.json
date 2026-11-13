@@ -1,0 +1,25 @@
+{
+  "pollster": "Maskína",
+  "series": "Fylgi flokka á Alþingi",
+  "published": "2026-10-23",
+  "scope": "national",
+  "values": {
+    "B": 7.9,
+    "C": 11.4,
+    "D": 21.9,
+    "F": 4.6,
+    "J": 4.1,
+    "M": 13.4,
+    "P": 3.3,
+    "S": 28.6,
+    "V": 4.8,
+    "O": 0.0
+  },
+  "fieldwork": {
+    "start": "2026-09-18",
+    "end": "2026-10-07"
+  },
+  "sample": 1791,
+  "note": "Maskínukönnun um fylgi flokka á Alþingi, október; vinnuvangar 18.–23. september og 2.–7. október (1.791 svarendur, 92,5% töku afstöðu). Birt 23. október 2026 (Vísir/DV).",
+  "source": "https://www.visir.is/g/20262952620d/sjalf-staedis-flokkur-tapar-fylgi-a-medan-fylgi-hinna-haggast-ekki"
+}
