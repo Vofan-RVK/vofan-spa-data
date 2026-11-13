@@ -45,7 +45,7 @@ function Rule() {
 
 /* Aðalkort: kjördæmi sem eitt svæði — litur eftir stærsta flokki,
    sameinuð ytri mörk teiknuð OFAN á fyllinguna (engar innri línur).
-   Fyllingarnar eru strýkaðar með sama lit svo saumarnas hverfi. */
+   Fyllingarnar eru strýkaðar með sama lit svo saumarnar hverfi. */
 function MainMap(sim, selected, onSelect) {
   var M = MAP_MAIN, O = M.outl;
   var byId = {};
