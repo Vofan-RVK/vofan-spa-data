@@ -1,0 +1,25 @@
+{
+  "pollster": "Maskína",
+  "series": "Fylgi flokka á Alþingi",
+  "published": "2026-01-21",
+  "scope": "national",
+  "values": {
+    "B": 7.1,
+    "C": 14.1,
+    "D": 13.5,
+    "F": 4.3,
+    "J": 4.1,
+    "M": 22.2,
+    "P": 4.1,
+    "S": 27.0,
+    "V": 3.7,
+    "O": 0.0
+  },
+  "fieldwork": {
+    "start": "2026-01-09",
+    "end": "2026-01-13"
+  },
+  "sample": 886,
+  "note": "Maskínukönnun um fylgi flokka á Alþingi, janúar. Birt í samstarfi við Sýn/Vísir og Heimildina 21. janúar 2026.",
+  "source": "https://www.visir.is/g/20262832055d/mid-flokkurinn-nalgast-sam-fylkingu"
+}
