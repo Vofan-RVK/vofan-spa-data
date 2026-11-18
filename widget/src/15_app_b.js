@@ -19,8 +19,8 @@
 
           /* ÞINGMENN EFTIR FLOKKUM — vinstri röðuð punktaröð fyrir hvern
              flokk: heill punktur = >99% líkur á a.m.k. þeim fjölda.
-             FJÓGUR litstig með stökkum falli milli stiga: 75%+, 50%+
-             og 25%+ — allt undir 25% líkum er fellt niður.
+             FIMM litstig með stökkum falli milli stiga: 75%+, 50%+,
+             25%+ og 10%+ — allt undir 10% líkum er fellt niður.
              Bendill sýnir fjölda og nákvæmar líkur (v3.23). */
           h("section", { class: "mt-6" },
             h("h2", { class: "text-sm font-bold uppercase tracking-widest",
@@ -39,14 +39,15 @@
      hver punktur fái sín eigin breytur (loka í lykkju) */
   function makeFlokDot(i, k, solid, geq) {
     var L = geq(k) * 100;
-    /* fjögur litstig: heill (>99%), 75%+, 50%+ og 25%+ — tölurnar
+    /* fimm litstig: heill (>99%), 75%+, 50%+, 25%+ og 10%+ — tölurnar
        eru fastir blæir með stórum mun á milli svo hvatningin
-       milli stiga sjáist greinilega; undir 25% kemur enginn punktur */
-    var level = solid ? null : L >= 75 ? 75 : L >= 50 ? 50 : 25;
-    var t = solid ? 1 : level === 75 ? 0.75 : level === 50 ? 0.45 : 0.15;
-    /* v3.23: litstigin halda sér en bendillinn sýnir NÁKVÆMAR líkur
-       á þeim fjölda með tveimur aukastöfum og kommu — ekki lengur
-       stigið ("75%+") og engu forskeyti ("a.m.k." fjarlægt) */
+       milli stiga sjáist greinilega; undir 10% kemur enginn punktur */
+    var level = solid ? null : L >= 75 ? 75 : L >= 50 ? 50 : L >= 25 ? 25 : 10;
+    var t = solid ? 1 : level === 75 ? 0.75 : level === 50 ? 0.45 : level === 25 ? 0.15 : 0.06;
+    /* v3.23: bendillinn sýnir NÁKVÆMAR líkur á þeim fjölda með
+       tveimur aukastöfum og kommu — ekki lengur stigið ("75%+") og
+       engu forskeyti ("a.m.k." fjarlægt); nýtt fimmta litstig 10%+
+       (t = 0.06) og punktar enda nú við ≥10% líkur en ekki 25% */
     var pct = L >= 100 ? "100%"
       : L.toFixed(2) === "100.00" ? ">99,99%"
       : L.toFixed(2).replace(".", ",") + "%";
@@ -68,8 +69,8 @@
   /* röð fyrir einn flokk í "Þingmenn eftir flokkum" */
   function flokRow(r, i) {
     /* líkur á a.m.k. X þingmönnum — hægri endi röðarinnar er hæsta X
-       með ≥25% líkum, vinstri endi hæsta X með >99% líkum;
-       punktar undir 25% eru fellir niður */
+       með ≥10% líkum, vinstri endi hæsta X með >99% líkum;
+       punktar undir 10% eru fellir niður */
     var n = r.samples.length;
     var sorted = r.samples.slice().sort(function (a, b) { return a - b; });
     function geq(x) {
@@ -91,12 +92,12 @@
     }
     var hi = xs[0];
     for (var xj = 0; xj < xs.length; xj++) {
-      if (geq(xs[xj]) >= 0.25) hi = xs[xj];
+      if (geq(xs[xj]) >= 0.10) hi = xs[xj];
       else break;
     }
     /* einn punktur fyrir HVERT mögulegt sætatölu: punktur nr. k stendur
        fyrir "k þingmenn". Fyrstu `lo` punktar eru fullir (>99% líkur á
-       a.m.k. þeim fjölda), hver næsti fær lit sitt af fjórum stigum */
+       a.m.k. þeim fjölda), hver næsti fær lit sinn af fimm stigum */
     var dots = [];
     for (var k = 1; k <= hi; k++) {
       dots.push(makeFlokDot(i, k, solidAt(k), geq));
