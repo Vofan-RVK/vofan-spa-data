@@ -21,7 +21,7 @@
              flokk: heill punktur = >99% líkur á a.m.k. þeim fjölda.
              FJÓGUR litstig með stökkum falli milli stiga: 75%+, 50%+
              og 25%+ — allt undir 25% líkum er fellt niður.
-             Bendill sýnir fjölda og nákvæmar líkur (v3.22). */
+             Bendill sýnir fjölda og nákvæmar líkur (v3.23). */
           h("section", { class: "mt-6" },
             h("h2", { class: "text-sm font-bold uppercase tracking-widest",
                 style: { color: RUST } }, "Þingmenn eftir flokkum"),
@@ -44,13 +44,13 @@
        milli stiga sjáist greinilega; undir 25% kemur enginn punktur */
     var level = solid ? null : L >= 75 ? 75 : L >= 50 ? 50 : 25;
     var t = solid ? 1 : level === 75 ? 0.75 : level === 50 ? 0.45 : 0.15;
-    /* v3.22: litstigin halda sér en bendillinn sýnir NÁKVÆMAR líkur
-       á a.m.k. þeim fjölda með tveimur aukastöfum og kommu — ekki
-       lengur stigið ("75%+") */
+    /* v3.23: litstigin halda sér en bendillinn sýnir NÁKVÆMAR líkur
+       á þeim fjölda með tveimur aukastöfum og kommu — ekki lengur
+       stigið ("75%+") og engu forskeyti ("a.m.k." fjarlægt) */
     var pct = L >= 100 ? "100%"
       : L.toFixed(2) === "100.00" ? ">99,99%"
       : L.toFixed(2).replace(".", ",") + "%";
-    var text = "a.m.k. " + k + (k === 1 ? " þingmaður · " : " þingmenn · ") + pct + " líkur";
+    var text = k + (k === 1 ? " þingmaður · " : " þingmenn · ") + pct + " líkur";
     var ev = dotHover(text);
     ev.click = function (e) {
       e.stopPropagation();
