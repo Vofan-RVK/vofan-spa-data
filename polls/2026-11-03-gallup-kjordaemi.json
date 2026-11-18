@@ -1,0 +1,26 @@
+{
+  "pollster": "Gallup",
+  "series": "Þjóðarpúlsinn",
+  "published": "2026-11-03",
+  "fieldwork": {
+    "start": "2026-09-29",
+    "end": "2026-11-01"
+  },
+  "scope": "constituency",
+  "values": {
+    "na": {
+      "B": 12.2,
+      "C": 5.5,
+      "D": 20.4,
+      "F": 5.2,
+      "J": 1.2,
+      "M": 20.9,
+      "P": 1.1,
+      "S": 25.5,
+      "V": 7.9,
+      "O": 0.1
+    }
+  },
+  "note": "Kjördæmatölur úr októberpúls (fylgiregin RÚV-samstarfsmiðla), sama púls og 2026-11-03-gallup.json (gagnasöfnun 29. september til 1. nóvember). Norðausturkjördæmi: Austurfrétt birt 18. nóvember 2026, n=419; O = 100 − útgefin tölur = 0,1. Septemberpúlsinn (S 34,6) virðist hafi verið frávik — októberniðurstöðurnar svipuð ágústmælingu. Samkvæmt mælingunni fær VG þingmann í NA á kostnað S.",
+  "source": "https://austurfrett.is/frettir/samfylkingin-tapar-fylgi-og-sjalfstaedhisflokkurinn-baetir-vidh-sig"
+}
