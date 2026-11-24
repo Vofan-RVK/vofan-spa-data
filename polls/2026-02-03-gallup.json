@@ -19,6 +19,7 @@
     "start": "2026-01-09",
     "end": "2026-02-01"
   },
-  "note": "Gallup Þjóðarpúlsinn, janúarmæling. Gildi: Gallup Puls_0126 og frétt á gallup.is (birt 3. febr. 2026); U-Vísir/mbl sóttu 3. febr.",
+  "sample": 9713,
+  "note": "Gallup Þjóðarpúlsinn, janúarmæling. Gildi: Gallup Puls_0226 (birt 3. febrúar 2026) og frétt á gallup.is; U-Vísir/mbl sóttu 3. febr. Úrtak 9.713, svarhlutfall 43,6%, víkmörk 0,5-1,6 prósentustig, netkönnun á Viðhorfahópi Gallup. Athugið að PDF-útgáfur Púlsins eru númeraðar eftir birtingarmánuði og birta mánaðargögn mánuðinum á undan (Puls_0226 = janúarmælingin).",
   "source": "https://www.gallup.is/nidurstodur/thjodarpuls/"
 }
