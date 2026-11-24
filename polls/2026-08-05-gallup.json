@@ -10,15 +10,16 @@
     "F": 5.2,
     "J": 3.2,
     "M": 14.6,
-    "P": 2.1,
+    "P": 2.2,
     "S": 27.9,
     "V": 3.9,
-    "O": 0.5
+    "O": 0.4
   },
   "fieldwork": {
     "start": "2026-07-01",
-    "end": "2026-07-31"
+    "end": "2026-08-03"
   },
-  "note": "Gallup Þjóðarpúlsinn, júlímæling. Gildi: Gallup Puls_0726 (ritunarbreytt tafla, nákvæmt einnar aukastafa fyrir 8 flokka) og gallup.is-frétt 5. ágúst 2026. Píratar 'rúmlega 2%' -> 2,1; annað (O) sem afgangur.",
+  "sample": 13167,
+  "note": "Gallup Þjóðarpúlsinn, júlímæling. Gildi: Gallup Puls_0826 og gallup.is-frétt 5. ágúst 2026; P 2,2 nákvæmt (Vísir greindi frá tölunum), leiðrétt úr 2,1 (24. nóvember 2026). Úrtak 13.167, svarhlutfall 37,2%, víkmörk 0,5-1,4 prósentustig, netkönnun á Viðhorfahópi Gallup. Vinnuvangur 1. júlí-3. ágúst (endir leiðréttur úr 31. júlí skv. útgáfunni).",
   "source": "https://www.gallup.is/nidurstodur/thjodarpuls/"
 }
