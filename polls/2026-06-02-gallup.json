@@ -8,17 +8,18 @@
     "C": 10.6,
     "D": 23.5,
     "F": 4.0,
-    "J": 3.0,
+    "J": 2.6,
     "M": 17.6,
-    "P": 2.0,
+    "P": 1.9,
     "S": 28.4,
     "V": 4.3,
-    "O": 0.0
+    "O": 0.4
   },
   "fieldwork": {
     "start": "2026-04-30",
     "end": "2026-05-31"
   },
-  "note": "Gallup Þjóðarpúlsinn, maímæling. Gildi: Gallup Puls_0526 og gallup.is-frétt 2. júní 2026.",
+  "sample": 12979,
+  "note": "Gallup Þjóðarpúlsinn, maímæling. Gildi: Gallup Puls_0626 og gallup.is-frétt 2. júní 2026. J 2,6 er í júníútgáfu Púlsins (samanburðarrað maímælingar); P 1,9 nákvæmt skv. gagnaseríu Gallup (Looker-mælaborð). Bæði leiðrétt 24. nóvember 2026 úr 3,0/2,0 (útan úr námundaðri frásögn). Úrtak 12.979, svarhlutfall 40,8%, víkmörk 0,4-1,3 prósentustig, netkönnun á Viðhorfahópi Gallup.",
   "source": "https://www.gallup.is/nidurstodur/thjodarpuls/"
 }
