@@ -19,6 +19,7 @@
     "start": "2026-09-29",
     "end": "2026-11-01"
   },
-  "note": "Gallup Þjóðarpúlsinn, októbermæling (fyrsta mæling eftir þjóðaratkvæðagreiðsluna um ESB 29. ágúst). Gildi: Gallup Puls_1026/1126 og fréttaumfjöllun RÚV/Vísis 3. nóvember 2026; fullt taflaæfintýri PolitPro.",
+  "sample": 12906,
+  "note": "Gallup Þjóðarpúlsinn, októbermæling (fyrsta mæling eftir þjóðaratkvæðagreiðsluna um ESB 29. ágúst). Gildi: Gallup Puls_1126 og fréttaumfjöllun RÚV/Vísis 3. nóvember 2026. J og P ekki með í útgáfunni (7 flokka); nákvæm gildi J 2,8 og P 2,2 skv. gagnaseríu Gallup (Looker-mælaborð, J 2,76, P 2,16). Úrtak 12.906, svarhlutfall 38,5%, víkmörk 0,5-1,4 prósentustig, netkönnun á Viðhorfahópi Gallup. Vinnuvangur hefst 29. september og skarast því á einn dag við síðasta dag septembermælingarinnar.",
   "source": "https://www.gallup.is/nidurstodur/thjodarpuls/"
 }
