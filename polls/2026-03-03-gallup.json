@@ -8,17 +8,18 @@
     "C": 10.9,
     "D": 18.1,
     "F": 5.8,
-    "J": 2.0,
+    "J": 2.5,
     "M": 20.3,
     "P": 2.7,
     "S": 28.5,
     "V": 4.2,
-    "O": 0.9
+    "O": 0.4
   },
   "fieldwork": {
     "start": "2026-02-02",
     "end": "2026-03-01"
   },
-  "note": "Gallup Þjóðarpúlsinn, febrúarmæling. Gildi: Gallup Puls_0226 (cdnx.gallup.is) og gallup.is-frétt 3. mars 2026.",
+  "sample": 9958,
+  "note": "Gallup Þjóðarpúlsinn, febrúarmæling. Gildi: Gallup Puls_0326 (birt 3. mars 2026) og gallup.is-frétt. Sósíalistar ekki með í útgáfunni (8 flokka); nákvæmt gildi J 2,5 skv. gagnaseríu Gallup (Looker-mælaborð), frásögn útgáfunnar segir „rösklega 2%\". J leiðrétt úr 2,0 (24. nóvember 2026, mælaborðið staðfest). Úrtak 9.958, svarhlutfall 44,3%, víkmörk 0,5-1,5 prósentustig, netkönnun á Viðhorfahópi Gallup.",
   "source": "https://www.gallup.is/nidurstodur/thjodarpuls/"
 }
