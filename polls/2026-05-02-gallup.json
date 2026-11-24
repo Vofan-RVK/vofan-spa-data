@@ -8,17 +8,18 @@
     "C": 10.6,
     "D": 21.4,
     "F": 5.2,
-    "J": 2.0,
+    "J": 2.3,
     "M": 18.9,
-    "P": 2.0,
+    "P": 2.1,
     "S": 28.5,
     "V": 5.1,
-    "O": 0.9
+    "O": 0.5
   },
   "fieldwork": {
     "start": "2026-04-01",
     "end": "2026-04-29"
   },
-  "note": "Gallup Þjóðarpúlsinn, aprílmæling. Gildi: Gallup Puls_0426 og Eyjafréttir/RÚV 2. maí 2026.",
+  "sample": 10484,
+  "note": "Gallup Þjóðarpúlsinn, aprílmæling. Gildi: Gallup Puls_0526 og frétt á gallup.is (sjálfstæðisflokkurinn-bætir-vid-sig-fylgi); Eyjafréttir/RÚV 2. maí 2026. J 2,3 og P 2,1 nákvæm skv. gagnaseríu Gallup (Looker-mælaborð), leiðrétt úr 2,0/2,0 (24. nóvember 2026); frásögn útgáfunnar segir „liðlega 2%\". Úrtak 10.484, svarhlutfall 40,4%, víkmörk 0,5-1,5 prósentustig, netkönnun á Viðhorfahópi Gallup.",
   "source": "https://www.gallup.is/nidurstodur/thjodarpuls/"
 }
